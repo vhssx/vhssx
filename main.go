@@ -10,6 +10,7 @@ import (
 
 	"github.com/urfave/cli"
 	"github.com/zhanbei/serve-static"
+	"github.com/gorilla/handlers"
 )
 
 const OptionNameEnableVirtualHosting = "enable-virtual-hosting"
@@ -52,12 +53,11 @@ func Action(c *cli.Context) error {
 		log.Fatal(err)
 	}
 
+	var handler http.Handler
 	if !mNoTrailingSlash {
-		fmt.Println("Looking after directory:", rootDir)
 		// Hosting in the normal mode.
-		fmt.Println("Server is running at:", address)
 		// @see https://stackoverflow.com/questions/26559557/how-do-you-serve-a-static-html-file-using-a-go-web-server
-		http.ListenAndServe(address, http.FileServer(http.Dir(rootDir)))
+		handler = http.FileServer(http.Dir(rootDir))
 	} else {
 		fmt.Println("Hosting static files in the " + OptionNameNoTrailingSlash + " mode.")
 		if mUsingVirtualHost {
@@ -68,10 +68,12 @@ func Action(c *cli.Context) error {
 			fmt.Println("ERROR: The specified www-root-directory is invalid:" + rootDir)
 			log.Fatal(err)
 		}
-		fmt.Println("Looking after directory:", mStaticServer.RootDir)
-		fmt.Println("Server is running at:", address)
-		http.ListenAndServe(address, mStaticServer)
+		handler = mStaticServer
 	}
+	fmt.Println("Looking after directory:", rootDir)
+	handler = handlers.CombinedLoggingHandler(os.Stdout, handler)
+	fmt.Println("Server is running at:", address)
+	http.ListenAndServe(address, handler)
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
 	return nil
 }
