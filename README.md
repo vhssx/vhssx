@@ -6,6 +6,14 @@
 
 A static server in Go, supporting hosting static files in the no-trailing-slash version.
 
+## Installation
+
+Get and install the repository using `go get`.
+
+```bash
+go get -u -v github.com/zhanbei/static-server
+```
+
 ## Examples of Usage
 
 ```bash
