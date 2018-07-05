@@ -24,10 +24,10 @@ func Action(c *cli.Context) error {
 		log.Fatal("You may add the --" + OptionNameNoTrailingSlash + " option to use --" + OptionNameEnableVirtualHosting + " option.")
 	}
 
-	address := ":8080"
-	if c.NArg() > 0 {
-		address = c.Args().Get(0)
+	if c.NArg() <= 0 {
+		log.Fatal("Please specify a port, like `static-server 8080`.")
 	}
+	address := c.Args().Get(0)
 	port, err := strconv.Atoi(address)
 	if err != nil {
 		// Check the address.

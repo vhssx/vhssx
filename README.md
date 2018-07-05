@@ -17,7 +17,10 @@ go get -u -v github.com/zhanbei/static-server
 ## Examples of Usage
 
 ```bash
-# Serving a folder on a specific port.
+# Serving the current folder on a specific port.
+static-server 1234
+
+# Serving a specific folder on a specific port.
 static-server 1234 ./some-folder/site-root
 
 # Serving a folder in the no-trailing-slash mode.
