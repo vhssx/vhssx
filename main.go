@@ -7,17 +7,43 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
+	"github.com/gorilla/handlers"
 	"github.com/urfave/cli"
 	"github.com/zhanbei/serve-static"
-	"github.com/gorilla/handlers"
 )
 
 const OptionNameEnableVirtualHosting = "enable-virtual-hosting"
 const OptionNameNoTrailingSlash = "no-trailing-slash"
+const OptionNameDirectoryListing = "enable-directory-listing"
 
 var mUsingVirtualHost = false
 var mNoTrailingSlash = true
+var mDirectoryListing = false
+
+// Disable directory listing with http.FileServer
+func GetNoDirListingHandler(rootDir string) http.Handler {
+	// @see https://stackoverflow.com/questions/26559557/how-do-you-serve-a-static-html-file-using-a-go-web-server
+	// @see https://groups.google.com/forum/#!msg/golang-nuts/bStLPdIVM6w/hidTJgDZpHcJ
+	// @see https://www.alexedwards.net/blog/disable-http-fileserver-directory-listings
+	handler := http.FileServer(http.Dir(rootDir))
+	if mDirectoryListing {
+		fmt.Println("Enabled directory listing.")
+		return handler
+	}
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		reqPath := r.URL.Path
+		if strings.HasSuffix(reqPath, "/") && reqPath != "/" {
+			exists, _ := servestatic.IsFileRegular(rootDir, reqPath, servestatic.IndexDotHtml)
+			if !exists {
+				http.NotFound(w, r)
+				return
+			}
+		}
+		handler.ServeHTTP(w, r)
+	})
+}
 
 func Action(c *cli.Context) error {
 	if !mNoTrailingSlash && mUsingVirtualHost {
@@ -56,8 +82,7 @@ func Action(c *cli.Context) error {
 	var handler http.Handler
 	if !mNoTrailingSlash {
 		// Hosting in the normal mode.
-		// @see https://stackoverflow.com/questions/26559557/how-do-you-serve-a-static-html-file-using-a-go-web-server
-		handler = http.FileServer(http.Dir(rootDir))
+		handler = GetNoDirListingHandler(rootDir)
 	} else {
 		fmt.Println("Hosting static files in the " + OptionNameNoTrailingSlash + " mode.")
 		if mUsingVirtualHost {
@@ -99,6 +124,13 @@ func main() {
 			Usage: "Hosting static files in the " + OptionNameNoTrailingSlash + " mode.",
 
 			Destination: &mNoTrailingSlash,
+		},
+		cli.BoolFlag{
+			Name: OptionNameDirectoryListing,
+
+			Usage: "Listing files of a directory if the index.html is not found when in the normal mode.",
+
+			Destination: &mDirectoryListing,
 		},
 	}
 	app.Action = Action
