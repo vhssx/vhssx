@@ -10,25 +10,6 @@ import (
 
 var ops = new(ServerOptions)
 
-func Action(c *cli.Context) error {
-	ops.ValidateOrExit()
-
-	if c.NArg() <= 0 {
-		log.Fatal("Please specify a port, like `static-server 8080`.")
-	}
-	address := c.Args().Get(0)
-	address, _ = ValidateArgAddressOrExit(address)
-
-	rootDir := "."
-	if c.NArg() > 1 {
-		rootDir = c.Args().Get(1)
-	}
-	rootDir = ValidateArgRootDirOrExit(rootDir)
-
-	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return RealServer(ops, address, rootDir)
-}
-
 // The primary program entrance.
 // Support more custom built, like for lite/medium/heavy programs, for cli/gui(with different themes) modes, and for linux/windows/mac platforms.
 // @see [Support multiple entrances and keep the current one as the primary. · Issue #6 · zhanbei/static-server](https://github.com/zhanbei/static-server/issues/6)
@@ -68,4 +49,23 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func Action(c *cli.Context) error {
+	ops.ValidateOrExit()
+
+	if c.NArg() <= 0 {
+		log.Fatal("Please specify a port, like `static-server 8080`.")
+	}
+	address := c.Args().Get(0)
+	address, _ = ValidateArgAddressOrExit(address)
+
+	rootDir := "."
+	if c.NArg() > 1 {
+		rootDir = c.Args().Get(1)
+	}
+	rootDir = ValidateArgRootDirOrExit(rootDir)
+
+	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
+	return RealServer(ops, address, rootDir)
 }
