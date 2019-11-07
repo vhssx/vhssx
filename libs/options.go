@@ -20,6 +20,8 @@ type ServerOptions struct {
 	NoTrailingSlash bool
 
 	UsingVirtualHost bool
+	// Header [ X-Remote-Addr > X-Forwarded-For > IP ]
+	TrustProxyIp bool
 }
 
 func (m *ServerOptions) IsValid() bool {

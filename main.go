@@ -10,6 +10,10 @@ import (
 
 var ops = new(ServerOptions)
 
+func init() {
+	ops.TrustProxyIp = true
+}
+
 // The primary program entrance.
 // Support more custom built, like for lite/medium/heavy programs, for cli/gui(with different themes) modes, and for linux/windows/mac platforms.
 // @see [Support multiple entrances and keep the current one as the primary. · Issue #6 · zhanbei/static-server](https://github.com/zhanbei/static-server/issues/6)

@@ -29,6 +29,13 @@ func RealServer(ops *ServerOptions, address, rootDir string) error {
 	}
 	fmt.Println("Looking after directory:", rootDir)
 	handler = handlers.CombinedLoggingHandler(os.Stdout, handler)
+
+	server := &http.Server{
+		Addr: address,
+
+		Handler: StructuredLoggingHandler(handler, ops),
+	}
+
 	fmt.Println("Server is running at:", address)
-	return http.ListenAndServe(address, handler)
+	return server.ListenAndServe()
 }
