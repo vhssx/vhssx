@@ -11,12 +11,10 @@ import (
 	. "github.com/zhanbei/static-server/libs"
 )
 
-var mUsingVirtualHost = false
-var mNoTrailingSlash = true
-var mDirectoryListing = false
+var ops = new(ServerOptions)
 
 func Action(c *cli.Context) error {
-	if !mNoTrailingSlash && mUsingVirtualHost {
+	if !ops.NoTrailingSlash && ops.UsingVirtualHost {
 		fmt.Println("ERROR: Sorry, currently virtual hosting is supported only in the " + OptionNameNoTrailingSlash + " mode.")
 		log.Fatal("You may add the --" + OptionNameNoTrailingSlash + " option to use --" + OptionNameEnableVirtualHosting + " option.")
 	}
@@ -50,7 +48,7 @@ func Action(c *cli.Context) error {
 	}
 
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return RealServer(&ServerOptions{mDirectoryListing, mNoTrailingSlash, mUsingVirtualHost}, address, rootDir)
+	return RealServer(ops, address, rootDir)
 }
 
 // The primary program entrance.
@@ -69,21 +67,21 @@ func main() {
 
 			Usage: "Whether to enable virtual hosting; @see https://en.wikipedia.org/wiki/Virtual_hosting",
 
-			Destination: &mUsingVirtualHost,
+			Destination: &ops.UsingVirtualHost,
 		},
 		cli.BoolFlag{
 			Name: OptionNameNoTrailingSlash,
 
 			Usage: "Hosting static files in the " + OptionNameNoTrailingSlash + " mode.",
 
-			Destination: &mNoTrailingSlash,
+			Destination: &ops.NoTrailingSlash,
 		},
 		cli.BoolFlag{
 			Name: OptionNameDirectoryListing,
 
 			Usage: "Listing files of a directory if the index.html is not found when in the normal mode.",
 
-			Destination: &mDirectoryListing,
+			Destination: &ops.DirectoryListing,
 		},
 	}
 	app.Action = Action
