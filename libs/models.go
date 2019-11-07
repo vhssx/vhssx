@@ -69,6 +69,7 @@ func NewRequest(req *http.Request) *Request {
 	}
 }
 
+// The summaries of the response.
 type Response struct {
 	Code int `json:"code,omitempty"`
 	//Status string `json:"status,omitempty"`
@@ -83,6 +84,9 @@ type Response struct {
 }
 
 func getContentLength(header http.Header) int64 {
+	if header == nil {
+		return 0
+	}
 	_length := header.Get("Content-Length")
 	if _length == "" {
 		return 0
@@ -94,14 +98,13 @@ func getContentLength(header http.Header) int64 {
 	return length
 }
 
-func NewResponse(header http.Header, duration time.Duration) *Response {
-	if header != nil {
-		return &Response{ContentLength: getContentLength(header), ContentType: header.Get("Content-Type"), Duration: duration.Nanoseconds(), Performance: duration.String()}
+func getContentType(header http.Header) string {
+	if header == nil {
+		return ""
 	}
-	return &Response{Duration: duration.Nanoseconds(), Performance: duration.String()}
-	//return &Response{
-	//	res.StatusCode, // res.Status,
-	//	res.ContentLength, res.Header.Get("Content-Type"), // !res.Uncompressed,
-	//	duration.Nanoseconds(), duration.String(),
-	//}
+	return header.Get("Content-Type")
+}
+
+func NewResponse(code int, header http.Header, duration time.Duration) *Response {
+	return &Response{code, getContentLength(header), getContentType(header), duration.Nanoseconds(), duration.String()}
 }
