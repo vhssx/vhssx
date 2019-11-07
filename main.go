@@ -3,20 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
 
-	"github.com/gorilla/handlers"
 	"github.com/urfave/cli"
-	"github.com/zhanbei/serve-static"
-	"github.com/zhanbei/static-server/libs"
+	. "github.com/zhanbei/static-server/libs"
 )
-
-const OptionNameEnableVirtualHosting = "enable-virtual-hosting"
-const OptionNameNoTrailingSlash = "no-trailing-slash"
-const OptionNameDirectoryListing = "enable-directory-listing"
 
 var mUsingVirtualHost = false
 var mNoTrailingSlash = true
@@ -56,28 +49,8 @@ func Action(c *cli.Context) error {
 		log.Fatal(err)
 	}
 
-	var handler http.Handler
-	if !mNoTrailingSlash {
-		// Hosting in the normal mode.
-		handler = libs.GetNoDirListingHandler(rootDir, mDirectoryListing)
-	} else {
-		fmt.Println("Hosting static files in the " + OptionNameNoTrailingSlash + " mode.")
-		if mUsingVirtualHost {
-			fmt.Println("Enabled virtual hosting based on request.Host; @see https://en.wikipedia.org/wiki/Virtual_hosting.")
-		}
-		mStaticServer, err := servestatic.NewFileServer(rootDir, mUsingVirtualHost)
-		if err != nil {
-			fmt.Println("ERROR: The specified www-root-directory is invalid:" + rootDir)
-			log.Fatal(err)
-		}
-		handler = mStaticServer
-	}
-	fmt.Println("Looking after directory:", rootDir)
-	handler = handlers.CombinedLoggingHandler(os.Stdout, handler)
-	fmt.Println("Server is running at:", address)
-	http.ListenAndServe(address, handler)
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return nil
+	return RealServer(&ServerOptions{mDirectoryListing, mNoTrailingSlash, mUsingVirtualHost}, address, rootDir)
 }
 
 // The primary program entrance.
