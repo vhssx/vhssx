@@ -28,7 +28,7 @@ func (m *Record) ToCombinedLog() string {
 	res := m.Response
 	return fmt.Sprintf(
 		`%s - - [%s] "%s %s %s" %d %d "%s" "%s"`,
-		m.Device.Ip, time.Unix(m.Time/1000, 0).String(), req.Method, req.Path, req.Proto, res.Code, res.ContentLength, req.Referer, m.Device.UserAgent,
+		m.Device.Ip, time.Unix(m.Time/1000, 0).Format("02/Jan/2006:15:04:05 -0700"), req.Method, req.Path, req.Proto, res.Code, res.ContentLength, req.Referer, m.Device.UserAgent,
 	)
 }
 
