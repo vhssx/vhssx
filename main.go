@@ -7,11 +7,11 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/handlers"
 	"github.com/urfave/cli"
 	"github.com/zhanbei/serve-static"
+	"github.com/zhanbei/static-server/libs"
 )
 
 const OptionNameEnableVirtualHosting = "enable-virtual-hosting"
@@ -21,29 +21,6 @@ const OptionNameDirectoryListing = "enable-directory-listing"
 var mUsingVirtualHost = false
 var mNoTrailingSlash = true
 var mDirectoryListing = false
-
-// Disable directory listing with http.FileServer
-func GetNoDirListingHandler(rootDir string) http.Handler {
-	// @see https://stackoverflow.com/questions/26559557/how-do-you-serve-a-static-html-file-using-a-go-web-server
-	// @see https://groups.google.com/forum/#!msg/golang-nuts/bStLPdIVM6w/hidTJgDZpHcJ
-	// @see https://www.alexedwards.net/blog/disable-http-fileserver-directory-listings
-	handler := http.FileServer(http.Dir(rootDir))
-	if mDirectoryListing {
-		fmt.Println("Enabled directory listing.")
-		return handler
-	}
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		reqPath := r.URL.Path
-		if strings.HasSuffix(reqPath, "/") && reqPath != "/" {
-			exists, _ := servestatic.IsFileRegular(rootDir, reqPath, servestatic.IndexDotHtml)
-			if !exists {
-				http.NotFound(w, r)
-				return
-			}
-		}
-		handler.ServeHTTP(w, r)
-	})
-}
 
 func Action(c *cli.Context) error {
 	if !mNoTrailingSlash && mUsingVirtualHost {
@@ -82,7 +59,7 @@ func Action(c *cli.Context) error {
 	var handler http.Handler
 	if !mNoTrailingSlash {
 		// Hosting in the normal mode.
-		handler = GetNoDirListingHandler(rootDir)
+		handler = libs.GetNoDirListingHandler(rootDir, mDirectoryListing)
 	} else {
 		fmt.Println("Hosting static files in the " + OptionNameNoTrailingSlash + " mode.")
 		if mUsingVirtualHost {
@@ -103,6 +80,9 @@ func Action(c *cli.Context) error {
 	return nil
 }
 
+// The primary program entrance.
+// Support more custom built, like for lite/medium/heavy programs, for cli/gui(with different themes) modes, and for linux/windows/mac platforms.
+// @see [Support multiple entrances and keep the current one as the primary. · Issue #6 · zhanbei/static-server](https://github.com/zhanbei/static-server/issues/6)
 func main() {
 	app := cli.NewApp()
 	app.Name = "static-server"
