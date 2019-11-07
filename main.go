@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"path/filepath"
-	"strconv"
 
 	"github.com/urfave/cli"
 	. "github.com/zhanbei/static-server/libs"
@@ -14,38 +11,19 @@ import (
 var ops = new(ServerOptions)
 
 func Action(c *cli.Context) error {
-	if !ops.NoTrailingSlash && ops.UsingVirtualHost {
-		fmt.Println("ERROR: Sorry, currently virtual hosting is supported only in the " + OptionNameNoTrailingSlash + " mode.")
-		log.Fatal("You may add the --" + OptionNameNoTrailingSlash + " option to use --" + OptionNameEnableVirtualHosting + " option.")
-	}
+	ops.ValidateOrExit()
 
 	if c.NArg() <= 0 {
 		log.Fatal("Please specify a port, like `static-server 8080`.")
 	}
 	address := c.Args().Get(0)
-	port, err := strconv.Atoi(address)
-	if err != nil {
-		// Check the address.
-	} else {
-		// The address is only a port.
-		if port < 1 || 65535 < port {
-			log.Fatal("ERROR: unavailable port[" + strconv.Itoa(port) + "]; make sure http port is number and is limited to <0-65535>.")
-		}
-		if port <= 1024 {
-			fmt.Println("WARNING: the port[" + strconv.Itoa(port) + "] specified is not bigger than 1024; root privileges may be needed!")
-		}
-		address = ":" + strconv.Itoa(port)
-	}
+	address, _ = ValidateArgAddressOrExit(address)
 
 	rootDir := "."
 	if c.NArg() > 1 {
 		rootDir = c.Args().Get(1)
 	}
-	rootDir, err = filepath.Abs(rootDir)
-	if err != nil {
-		fmt.Println("ERROR: The specified www-root-directory is invalid:" + rootDir)
-		log.Fatal(err)
-	}
+	rootDir = ValidateArgRootDirOrExit(rootDir)
 
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
 	return RealServer(ops, address, rootDir)

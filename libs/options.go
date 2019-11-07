@@ -1,5 +1,10 @@
 package libs
 
+import (
+	"fmt"
+	"log"
+)
+
 const (
 	OptionNameEnableVirtualHosting = "enable-virtual-hosting"
 
@@ -15,4 +20,18 @@ type ServerOptions struct {
 	NoTrailingSlash bool
 
 	UsingVirtualHost bool
+}
+
+func (m *ServerOptions) IsValid() bool {
+	if !m.NoTrailingSlash && m.UsingVirtualHost {
+		return false
+	}
+	return true
+}
+
+func (m *ServerOptions) ValidateOrExit() {
+	if !m.IsValid() {
+		fmt.Println("ERROR: Sorry, currently virtual hosting is supported only in the " + OptionNameNoTrailingSlash + " mode.")
+		log.Fatal("You may add the --" + OptionNameNoTrailingSlash + " option to use --" + OptionNameEnableVirtualHosting + " option.")
+	}
 }
