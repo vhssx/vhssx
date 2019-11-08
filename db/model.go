@@ -45,7 +45,7 @@ func (m *Record) ToCombinedLog() string {
 }
 
 func (m *Record) Log() {
-	fmt.Println(m.ToCombinedLog())
+	fmt.Println(m.ToCombinedLog(), time.Duration(m.Response.Duration).String())
 	bts, _ := json.Marshal(m)
 	fmt.Println("-+>", string(bts))
 }

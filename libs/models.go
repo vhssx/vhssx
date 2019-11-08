@@ -54,7 +54,7 @@ func (m *Record) ToCombinedLog() string {
 }
 
 func (m *Record) Log() {
-	fmt.Println(m.ToCombinedLog())
+	fmt.Println(m.ToCombinedLog(), time.Duration(m.Response.Duration).String())
 	bts, _ := json.Marshal(m)
 	fmt.Println("-+>", string(bts))
 }
@@ -111,7 +111,7 @@ type Response struct {
 	// Time spent in nanoseconds.
 	Duration int64 `json:"duration"`
 	// Readable duration.
-	Performance string `json:"_duration"`
+	//Performance string `json:"_duration"`
 }
 
 func getContentLength(header http.Header) int64 {
@@ -137,5 +137,5 @@ func getContentType(header http.Header) string {
 }
 
 func NewResponse(code int, header http.Header, duration time.Duration) *Response {
-	return &Response{code, getContentLength(header), getContentType(header), duration.Nanoseconds(), duration.String()}
+	return &Response{code, getContentLength(header), getContentType(header), duration.Nanoseconds()}
 }
