@@ -1,8 +1,6 @@
 package libs
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -39,7 +37,7 @@ func (m *ResponseLoggingWriter) WriteHeader(code int) {
 	m.ResponseWriter.WriteHeader(code)
 }
 
-func StructuredLoggingHandler(next http.Handler, ops *ServerOptions) http.HandlerFunc {
+func StructuredLoggingHandler(next http.Handler, ops *ServerOptions, recorder IRecorder) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		lrw := NewResponseLoggingWriter(w)
 		defer func(start time.Time) {
@@ -48,15 +46,14 @@ func StructuredLoggingHandler(next http.Handler, ops *ServerOptions) http.Handle
 			if ops.TrustProxyIp {
 				ip = getRemoteIp(req.Header, ip)
 			}
-			record := NewRecord(
+			record := recorder.NewInstance(
 				NewDevice(ip, req.UserAgent()),
 				NewRequest(req),
 				NewResponse(lrw.StatusCode, w.Header(), time.Since(start)),
 			)
+			_ = record.Save()
 			// FIXME Write to database or stdout, following the configures.
-			bts, _ := json.Marshal(record)
-			fmt.Println(record.ToCombinedLog())
-			fmt.Println("-+>", string(bts))
+			record.Log()
 		}(time.Now())
 		next.ServeHTTP(lrw, req)
 	}

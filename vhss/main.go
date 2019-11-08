@@ -71,5 +71,5 @@ func Action(c *cli.Context) error {
 	rootDir = ValidateArgRootDirOrExit(rootDir)
 
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return RealServer(ops, address, rootDir)
+	return RealServer(ops, address, rootDir, new(Recorder))
 }

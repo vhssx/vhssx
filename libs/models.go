@@ -1,11 +1,31 @@
 package libs
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 )
+
+type IRecorder interface {
+	NewInstance(device *Device, request *Request, response *Response) IRecord
+}
+
+type IRecord interface {
+	// Do serialize the record.
+	Save() error
+	// Print something.
+	Log()
+
+	ToCombinedLog() string
+}
+
+type Recorder struct{}
+
+func (m *Recorder) NewInstance(device *Device, request *Request, response *Response) IRecord {
+	return &Record{device, request, response, GetCurrentMilliseconds()}
+}
 
 // The record of a single request, with device and response.
 // Naming: Record, RequestRecord, ServiceRecords
@@ -19,10 +39,6 @@ type Record struct {
 	Time int64 `json:"time"`
 }
 
-func NewRecord(device *Device, request *Request, response *Response) *Record {
-	return &Record{device, request, response, GetCurrentMilliseconds()}
-}
-
 func (m *Record) ToCombinedLog() string {
 	req := m.Request
 	res := m.Response
@@ -30,6 +46,16 @@ func (m *Record) ToCombinedLog() string {
 		`%s - - [%s] "%s %s %s" %d %d "%s" "%s"`,
 		m.Device.Ip, time.Unix(m.Time/1000, 0).Format("02/Jan/2006:15:04:05 -0700"), req.Method, req.Path, req.Proto, res.Code, res.ContentLength, req.Referer, m.Device.UserAgent,
 	)
+}
+
+func (m *Record) Log() {
+	fmt.Println(m.ToCombinedLog())
+	bts, _ := json.Marshal(m)
+	fmt.Println("-+>", string(bts))
+}
+
+func (m *Record) Save() error {
+	return nil
 }
 
 type Device struct {

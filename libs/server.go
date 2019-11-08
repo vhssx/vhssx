@@ -10,7 +10,7 @@ import (
 	"github.com/zhanbei/serve-static"
 )
 
-func RealServer(ops *ServerOptions, address, rootDir string) error {
+func RealServer(ops *ServerOptions, address, rootDir string, recorder IRecorder) error {
 	var handler http.Handler
 	if !ops.NoTrailingSlash {
 		// Hosting in the normal mode.
@@ -33,7 +33,7 @@ func RealServer(ops *ServerOptions, address, rootDir string) error {
 	server := &http.Server{
 		Addr: address,
 
-		Handler: StructuredLoggingHandler(handler, ops),
+		Handler: StructuredLoggingHandler(handler, ops, recorder),
 	}
 
 	fmt.Println("Server is running at:", address)
