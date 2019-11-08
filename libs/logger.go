@@ -46,11 +46,7 @@ func StructuredLoggingHandler(next http.Handler, ops *ServerOptions, recorder IR
 			if ops.TrustProxyIp {
 				ip = getRemoteIp(req.Header, ip)
 			}
-			record := recorder.NewInstance(
-				NewDevice(ip, req.UserAgent()),
-				NewRequest(req),
-				NewResponse(lrw.StatusCode, w.Header(), time.Since(start)),
-			)
+			record := recorder.NewInstance(start, ip, req, lrw.StatusCode, w.Header())
 			_ = record.Save()
 			// FIXME Write to database or stdout, following the configures.
 			record.Log()

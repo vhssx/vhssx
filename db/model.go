@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/zhanbei/static-server/libs"
@@ -10,8 +11,14 @@ import (
 
 type Recorder struct{}
 
-func (m *Recorder) NewInstance(device *libs.Device, request *libs.Request, response *libs.Response) libs.IRecord {
-	return &Record{NewObjectId(), device, request, response, libs.GetCurrentMilliseconds()}
+func (m *Recorder) NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) libs.IRecord {
+	return &Record{
+		NewObjectId(),
+		libs.NewDevice(realIp, req.UserAgent()),
+		libs.NewRequest(req),
+		libs.NewResponse(code, header, time.Since(start)),
+		libs.GetCurrentMilliseconds(),
+	}
 }
 
 // The record of a single request, with device and response.

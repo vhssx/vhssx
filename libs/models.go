@@ -9,7 +9,7 @@ import (
 )
 
 type IRecorder interface {
-	NewInstance(device *Device, request *Request, response *Response) IRecord
+	NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) IRecord
 }
 
 type IRecord interface {
@@ -23,8 +23,13 @@ type IRecord interface {
 
 type Recorder struct{}
 
-func (m *Recorder) NewInstance(device *Device, request *Request, response *Response) IRecord {
-	return &Record{device, request, response, GetCurrentMilliseconds()}
+func (m *Recorder) NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) IRecord {
+	return &Record{
+		NewDevice(realIp, req.UserAgent()),
+		NewRequest(req),
+		NewResponse(code, header, time.Since(start)),
+		GetCurrentMilliseconds(),
+	}
 }
 
 // The record of a single request, with device and response.
