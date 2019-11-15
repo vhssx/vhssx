@@ -2,7 +2,8 @@ package libs
 
 import (
 	"fmt"
-	"log"
+
+	"github.com/zhanbei/static-server/helpers/terminator"
 )
 
 const (
@@ -34,6 +35,6 @@ func (m *ServerOptions) IsValid() bool {
 func (m *ServerOptions) ValidateOrExit() {
 	if !m.IsValid() {
 		fmt.Println("ERROR: Sorry, currently virtual hosting is supported only in the " + OptionNameNoTrailingSlash + " mode.")
-		log.Fatal("You may add the --" + OptionNameNoTrailingSlash + " option to use --" + OptionNameEnableVirtualHosting + " option.")
+		terminator.ExitWithConfigError(nil, "You may add the --"+OptionNameNoTrailingSlash+" option to use --"+OptionNameEnableVirtualHosting+" option.")
 	}
 }

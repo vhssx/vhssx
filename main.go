@@ -1,10 +1,10 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/urfave/cli"
+	"github.com/zhanbei/static-server/helpers/terminator"
 	. "github.com/zhanbei/static-server/libs"
 )
 
@@ -51,7 +51,7 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		terminator.ExitWithPreLaunchServerError(err, "Loading configures from environment variables failed!")
 	}
 }
 
@@ -59,7 +59,7 @@ func Action(c *cli.Context) error {
 	ops.ValidateOrExit()
 
 	if c.NArg() <= 0 {
-		log.Fatal("Please specify a port, like `static-server 8080`.")
+		terminator.ExitWithConfigError(nil, "Please specify a port, like `static-server 8080`.")
 	}
 	address := c.Args().Get(0)
 	address, _ = ValidateArgAddressOrExit(address)

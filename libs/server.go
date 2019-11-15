@@ -2,12 +2,12 @@ package libs
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
 	"github.com/gorilla/handlers"
 	"github.com/zhanbei/serve-static"
+	"github.com/zhanbei/static-server/helpers/terminator"
 )
 
 func RealServer(ops *ServerOptions, address, rootDir string, recorder IRecorder) error {
@@ -22,8 +22,7 @@ func RealServer(ops *ServerOptions, address, rootDir string, recorder IRecorder)
 		}
 		mStaticServer, err := servestatic.NewFileServer(rootDir, ops.UsingVirtualHost)
 		if err != nil {
-			fmt.Println("ERROR: The specified www-root-directory is invalid:" + rootDir)
-			log.Fatal(err)
+			terminator.ExitWithPreLaunchServerError(err, "ERROR: The specified www-root-directory does not exist: "+rootDir)
 		}
 		handler = mStaticServer
 	}
