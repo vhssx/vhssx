@@ -5,15 +5,17 @@ const (
 )
 
 type MongoDbOptions struct {
+	Enabled bool `json:"enabled"`
+
 	Uri string `json:"uri"`
 
-	DbName string `json:"database"`
+	DbName string `json:"db"`
 	// For all normal records/requests.
 	// logging.normal.requests
 	// logging.normal.devices
 	// logging.normal.clicks
 	// logging.normal.views
-	CollectionPrefix string `json:"collection"`
+	CollectionPrefix string `json:"col"`
 }
 
 func (m *MongoDbOptions) GetColName(colName string) string {

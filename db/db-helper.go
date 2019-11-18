@@ -14,6 +14,7 @@ var (
 	col *mongo.Collection
 )
 
+// Initialize the mongodb connection, and store as global variables.
 func ConnectToMongoDb(ops *MongoDbOptions) error {
 	client, err := mongo.Connect(NewTimoutContext(10), options.Client().ApplyURI(ops.Uri))
 	if err != nil {

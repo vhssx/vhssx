@@ -1,0 +1,40 @@
+
+
+address = "8080"
+
+rootDir = "."
+
+[server]
+
+# Whether to enable virtual hosting; @see https://en.wikipedia.org/wiki/Virtual_hosting
+virtualHosting = true
+# Hosting static files in the no-trailing-slash mode.
+noTrailingSlash = true
+# Listing files of a directory if the index.html is not found when in the normal mode.
+directoryListing = true
+
+# This server will be running behind a reverse proxy, and prefer to fetch the remote ip
+# from header [ `X-Remote-Addr` > `X-Forwarded-For` > `IP` ] over `ctx.Request.Ip`.
+TrustProxyIp = true
+
+[mongo]
+
+enabled = false
+uri = "mongodb://127.0.0.1:27017"
+db = "vhss"
+col = "logging.vhss"
+
+
+[[loggers]]
+
+enabled = true
+format = "text"
+perHost = false
+target = "stdout" # or file
+
+[[loggers]]
+
+enabled = true
+format = "json"
+perHost = false
+target = "logs/app-requests.log"

@@ -16,13 +16,13 @@ const (
 
 // The options reading from configuration files, or environment.
 type ServerOptions struct {
-	DirectoryListing bool
+	DirectoryListing bool `json:"directoryListing"`
 
-	NoTrailingSlash bool
+	NoTrailingSlash bool `json:"noTrailingSlash"`
 
-	UsingVirtualHost bool
+	UsingVirtualHost bool `json:"virtualHosting"`
 	// Header [ X-Remote-Addr > X-Forwarded-For > IP ]
-	TrustProxyIp bool
+	TrustProxyIp bool `json:"trustProxyIp"`
 }
 
 func (m *ServerOptions) IsValid() bool {

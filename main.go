@@ -4,8 +4,11 @@ import (
 	"os"
 
 	"github.com/urfave/cli"
+	"github.com/zhanbei/static-server/configs"
+	"github.com/zhanbei/static-server/db"
 	"github.com/zhanbei/static-server/helpers/terminator"
 	. "github.com/zhanbei/static-server/libs"
+	"github.com/zhanbei/static-server/utils"
 )
 
 var ops = new(ServerOptions)
@@ -14,17 +17,29 @@ func init() {
 	ops.TrustProxyIp = true
 }
 
+var OptionConfiguresFile = ""
+
 // The primary program entrance.
+// (Cli Arguments Receiver + Configuration File Parser + MongoDB Driver)
 // Support more custom built, like for lite/medium/heavy programs, for cli/gui(with different themes) modes, and for linux/windows/mac platforms.
 // @see [Support multiple entrances and keep the current one as the primary. · Issue #6 · zhanbei/static-server](https://github.com/zhanbei/static-server/issues/6)
 func main() {
 	app := cli.NewApp()
 	app.Name = "static-server"
 	app.Usage = "A static server in Go, supporting hosting static files in the no-trailing-slash version."
-	app.Version = "0.9.0"
+	app.Version = "0.9.1"
 	app.Description = "A static server in Go, supporting hosting static files in the no-trailing-slash version."
 	app.UsageText = "static-server [global options] [<http-address>:]<http-port> <www-root-directory>"
 	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name: "configure",
+
+			Usage: "The configuration file to be used.",
+
+			Value: "configuration file",
+
+			Destination: &OptionConfiguresFile,
+		},
 		cli.BoolFlag{
 			Name: OptionNameEnableVirtualHosting,
 
@@ -56,6 +71,34 @@ func main() {
 }
 
 func Action(c *cli.Context) error {
+	if utils.NotEmpty(OptionConfiguresFile) {
+		return ActionConfigurationFile(c, OptionConfiguresFile)
+	} else {
+		return ActionCliArguments(c, ops)
+	}
+}
+
+// FIX-ME Use a default configuration file, like `vhss.(yaml|toml|json)`.
+func ActionConfigurationFile(c *cli.Context, confFile string) error {
+	cfg, err := configs.LoadServerConfigures(confFile)
+	if err != nil {
+		terminator.ExitWithPreLaunchServerError(err, "Loading and validating the configures failed!")
+	}
+
+	var rec IRecorder = new(Recorder)
+	mon := cfg.MongoDbOptions
+	if mon != nil && mon.Enabled {
+		err = db.ConnectToMongoDb(cfg.MongoDbOptions)
+		if err != nil {
+			terminator.ExitWithPreLaunchServerError(err, "Connecting to mongodb failed!")
+		}
+		rec = db.NewRecorder()
+	}
+
+	return RealServer(cfg.Server, cfg.Address, cfg.RootDir, rec)
+}
+
+func ActionCliArguments(c *cli.Context, ops *ServerOptions) error {
 	ops.ValidateOrExit()
 
 	if c.NArg() <= 0 {

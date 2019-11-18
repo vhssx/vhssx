@@ -11,6 +11,10 @@ import (
 
 type Recorder struct{}
 
+func NewRecorder() *Recorder {
+	return new(Recorder)
+}
+
 func (m *Recorder) NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) libs.IRecord {
 	return &Record{
 		NewObjectId(),
