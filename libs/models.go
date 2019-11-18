@@ -2,14 +2,21 @@ package libs
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
 
 type IRecorder interface {
 	NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) IRecord
+	// Do serialize the record.
+	Save(record IRecord) error
+	// Print something.
+	Log(record IRecord)
 }
 
 type IRecord interface {
@@ -21,7 +28,42 @@ type IRecord interface {
 	ToCombinedLog() string
 }
 
-type Recorder struct{}
+type Recorder struct {
+	*OptionLogger
+}
+
+func NewRecorder(ops *OptionLogger) *Recorder {
+	return &Recorder{ops}
+}
+
+func (m *Recorder) Record(target io.Writer, record IRecord) (int, error) {
+	if target == nil {
+		return -1, nil
+	}
+	if m.Format == LoggerFormatText {
+		return fmt.Fprintln(target, record.ToCombinedLog())
+	} else if m.Format == LoggerFormatJson {
+		bts, _ := json.Marshal(m)
+		return target.Write(bts)
+	} else {
+		return -1, errors.New("unsupported logger format: " + string(m.Format))
+	}
+}
+
+func (m *Recorder) Log(record IRecord) {
+	if !m.Stdout {
+		return
+	}
+	_, _ = m.Record(os.Stdout, record)
+}
+
+func (m *Recorder) Save(record IRecord) error {
+	if m.LogWriter == nil {
+		return nil
+	}
+	_, err := m.Record(m.LogWriter, record)
+	return err
+}
 
 func (m *Recorder) NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) IRecord {
 	return &Record{
@@ -48,8 +90,9 @@ func (m *Record) ToCombinedLog() string {
 	req := m.Request
 	res := m.Response
 	return fmt.Sprintf(
-		`%s - - [%s] "%s %s %s" %d %d "%s" "%s"`,
+		`%s - - [%s] "%s %s %s" %d %d "%s" "%s" "%s"`,
 		m.Device.Ip, time.Unix(m.Time/1000, 0).Format("02/Jan/2006:15:04:05 -0700"), req.Method, req.Path, req.Proto, res.Code, res.ContentLength, req.Referer, m.Device.UserAgent,
+		time.Duration(m.Response.Duration).String(),
 	)
 }
 
@@ -124,7 +167,7 @@ func getContentLength(header http.Header) int64 {
 	}
 	length, err := strconv.ParseInt(_length, 10, 64)
 	if err != nil {
-		fmt.Println("Failed to decode the Content-Length:", )
+		fmt.Println("Failed to decode the Content-Length:")
 	}
 	return length
 }

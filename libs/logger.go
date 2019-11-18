@@ -1,8 +1,11 @@
 package libs
 
 import (
+	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/zhanbei/static-server/configs"
 )
 
 func getRemoteIp(header http.Header, original string) string {
@@ -37,7 +40,32 @@ func (m *ResponseLoggingWriter) WriteHeader(code int) {
 	m.ResponseWriter.WriteHeader(code)
 }
 
-func StructuredLoggingHandler(next http.Handler, ops *ServerOptions, recorder IRecorder) http.HandlerFunc {
+func StructuredLoggingHandler(next http.Handler, cfg *configs.Configure) http.HandlerFunc {
+	ops := cfg.Server
+
+	recorders := make([]IRecorder, 0)
+
+	for _, logger := range *cfg.Loggers {
+		if !logger.Enabled {
+			continue
+		}
+		if logger.PerHost {
+			fmt.Println("Not supported logger#PerHost:", logger)
+			continue
+		}
+		recorder := NewRecorder(logger)
+		recorders = append(recorders, recorder)
+	}
+
+	mon := cfg.MongoDbOptions
+	gor := cfg.GorillaOptions
+	if (gor == nil || !gor.Enabled) && (mon == nil || !mon.Enabled) && len(recorders) == 0 { // <= 0 {
+		// Add a default console(stdout) logger when there is no logger configured!
+		logger := NewLogger(LoggerFormatText, true, "")
+		recorder := NewRecorder(logger)
+		recorders = append(recorders, recorder)
+	}
+
 	return func(w http.ResponseWriter, req *http.Request) {
 		lrw := NewResponseLoggingWriter(w)
 		defer func(start time.Time) {
@@ -46,10 +74,12 @@ func StructuredLoggingHandler(next http.Handler, ops *ServerOptions, recorder IR
 			if ops.TrustProxyIp {
 				ip = getRemoteIp(req.Header, ip)
 			}
-			record := recorder.NewInstance(start, ip, req, lrw.StatusCode, w.Header())
-			_ = record.Save()
-			// FIXME Write to database or stdout, following the configures.
-			record.Log()
+
+			for _, recorder := range recorders {
+				record := recorder.NewInstance(start, ip, req, lrw.StatusCode, w.Header())
+				recorder.Log(record)
+				_ = recorder.Save(record)
+			}
 		}(time.Now())
 		next.ServeHTTP(lrw, req)
 	}

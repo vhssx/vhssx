@@ -18,23 +18,37 @@ directoryListing = true
 TrustProxyIp = true
 
 [mongo]
-
+# MongoDB Logger.
 enabled = false
 uri = "mongodb://127.0.0.1:27017"
 db = "vhss"
 col = "logging.vhss"
 
 
+# THE START OF #Loggers.
+
 [[loggers]]
 
 enabled = true
 format = "text"
 perHost = false
-target = "stdout" # or file
+stdout = true
+target = "logs/stdout.log" # or file
 
 [[loggers]]
 
 enabled = true
 format = "json"
 perHost = false
+stdout = false
 target = "logs/app-requests.log"
+
+# THE END OF #Loggers.
+
+
+[gorilla]
+# From gorrilla/handlers, there are logs of loggers can be facilitated!
+enabled = true
+format = "combined"
+stdout = true
+target = ""

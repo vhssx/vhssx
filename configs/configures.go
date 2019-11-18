@@ -18,6 +18,8 @@ type Configure struct {
 	Loggers *libs.OptionLoggers `json:"loggers"`
 
 	MongoDbOptions *db.MongoDbOptions `json:"mongo"`
+
+	GorillaOptions *libs.OptionLoggerGorilla `json:"mongo"`
 }
 
 var has = utils.NotEmpty

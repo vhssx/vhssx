@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/urfave/cli"
@@ -84,18 +86,19 @@ func ActionConfigurationFile(c *cli.Context, confFile string) error {
 	if err != nil {
 		terminator.ExitWithPreLaunchServerError(err, "Loading and validating the configures failed!")
 	}
+	bts, err := json.Marshal(cfg)
+	fmt.Println("Loading configures:", string(bts))
+	fmt.Println(cfg, cfg.Server, cfg.Loggers, cfg.MongoDbOptions, confFile)
 
-	var rec IRecorder = new(Recorder)
 	mon := cfg.MongoDbOptions
 	if mon != nil && mon.Enabled {
 		err = db.ConnectToMongoDb(cfg.MongoDbOptions)
 		if err != nil {
 			terminator.ExitWithPreLaunchServerError(err, "Connecting to mongodb failed!")
 		}
-		rec = db.NewRecorder()
 	}
 
-	return RealServer(cfg.Server, cfg.Address, cfg.RootDir, rec)
+	return RealServer(cfg)
 }
 
 func ActionCliArguments(c *cli.Context, ops *ServerOptions) error {
@@ -113,6 +116,7 @@ func ActionCliArguments(c *cli.Context, ops *ServerOptions) error {
 	}
 	rootDir = ValidateArgRootDirOrExit(rootDir)
 
+	fmt.Println("Loading arguments:", address, rootDir, ops)
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return RealServer(ops, address, rootDir, new(Recorder))
+	return RealServer(&configs.Configure{rootDir, address, ops, nil, nil, nil})
 }
