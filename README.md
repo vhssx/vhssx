@@ -23,6 +23,7 @@ or heavy and powerful.
 1. A/The Simple Static Site Server `static-server` `assss` `zss`
 1. Lightweight VHSS `vhssl`
 1. VHSS with MongoDB Driver `vhssdb`
+	- Load configures and combine with interfaces.
 
 ## Configures and Options
 
@@ -33,6 +34,8 @@ Support multiple targets(file/stdout/files/mongodb) in multiple(possible) format
 | **Text** | `+++` | `++` | `---` |
 | **JSON** | `+` | `+++` | `---` |
 | **BSON** | `---` | `---` | `+++` |
+
+Tools to convert between `BSON`, `JSON`, and `Text` may be needed.
 
 - Server
 	- Virtual Hosting `false`
