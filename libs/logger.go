@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/zhanbei/static-server/configs"
+	"github.com/zhanbei/static-server/conf"
 )
 
 func getRemoteIp(header http.Header, original string) string {
@@ -40,7 +40,7 @@ func (m *ResponseLoggingWriter) WriteHeader(code int) {
 	m.ResponseWriter.WriteHeader(code)
 }
 
-func StructuredLoggingHandler(next http.Handler, cfg *configs.Configure) http.HandlerFunc {
+func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure) http.HandlerFunc {
 	ops := cfg.Server
 
 	recorders := make([]IRecorder, 0)
@@ -61,7 +61,7 @@ func StructuredLoggingHandler(next http.Handler, cfg *configs.Configure) http.Ha
 	gor := cfg.GorillaOptions
 	if (gor == nil || !gor.Enabled) && (mon == nil || !mon.Enabled) && len(recorders) == 0 { // <= 0 {
 		// Add a default console(stdout) logger when there is no logger configured!
-		logger := configs.NewLogger(configs.LoggerFormatText, true, "")
+		logger := conf.NewLogger(conf.LoggerFormatText, true, "")
 		recorder := NewRecorder(logger)
 		recorders = append(recorders, recorder)
 	}

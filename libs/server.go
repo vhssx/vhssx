@@ -7,19 +7,19 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/zhanbei/serve-static"
-	"github.com/zhanbei/static-server/configs"
+	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/helpers/terminator"
 	"github.com/zhanbei/static-server/utils"
 )
 
-func RealServer(cfg *configs.Configure) error {
+func RealServer(cfg *conf.Configure) error {
 	ops := cfg.Server
 	var handler http.Handler
 	if !ops.NoTrailingSlash {
 		// Hosting in the normal mode.
 		handler = GetNoDirListingHandler(cfg.RootDir, ops.DirectoryListing)
 	} else {
-		fmt.Println("Hosting static files in the " + configs.OptionNameNoTrailingSlash + " mode.")
+		fmt.Println("Hosting static files in the " + conf.OptionNameNoTrailingSlash + " mode.")
 		if ops.UsingVirtualHost {
 			fmt.Println("Enabled virtual hosting based on request.Host; @see https://en.wikipedia.org/wiki/Virtual_hosting.")
 		}

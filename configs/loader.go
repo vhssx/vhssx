@@ -4,9 +4,10 @@ import (
 	"errors"
 
 	"github.com/micro/go-micro/config"
+	"github.com/zhanbei/static-server/conf"
 )
 
-func LoadServerConfigures(mGivenConfigFile string) (*Configure, error) {
+func LoadServerConfigures(mGivenConfigFile string) (*conf.Configure, error) {
 	if mGivenConfigFile == "" {
 		return nil, errors.New("expected configuration file")
 	}
@@ -16,7 +17,7 @@ func LoadServerConfigures(mGivenConfigFile string) (*Configure, error) {
 		return nil, err
 	}
 
-	mConfig := new(Configure)
+	mConfig := new(conf.Configure)
 
 	err = config.Scan(mConfig)
 	if err != nil {

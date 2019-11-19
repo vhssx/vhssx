@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/zhanbei/static-server/configs"
+	"github.com/zhanbei/static-server/conf"
 )
 
 type IRecorder interface {
@@ -31,10 +31,10 @@ type IRecord interface {
 }
 
 type Recorder struct {
-	*configs.OptionLogger
+	*conf.OptionLogger
 }
 
-func NewRecorder(ops *configs.OptionLogger) *Recorder {
+func NewRecorder(ops *conf.OptionLogger) *Recorder {
 	return &Recorder{ops}
 }
 
@@ -42,9 +42,9 @@ func (m *Recorder) Record(target io.Writer, record IRecord) (int, error) {
 	if target == nil {
 		return -1, nil
 	}
-	if m.Format == configs.LoggerFormatText {
+	if m.Format == conf.LoggerFormatText {
 		return fmt.Fprintln(target, record.ToCombinedLog())
-	} else if m.Format == configs.LoggerFormatJson {
+	} else if m.Format == conf.LoggerFormatJson {
 		bts, _ := json.Marshal(m)
 		return target.Write(bts)
 	} else {

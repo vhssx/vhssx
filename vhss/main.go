@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/urfave/cli"
-	. "github.com/zhanbei/static-server/configs"
+	. "github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/helpers/terminator"
 	"github.com/zhanbei/static-server/libs"
 )

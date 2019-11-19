@@ -1,4 +1,4 @@
-package configs
+package conf
 
 import (
 	"github.com/zhanbei/static-server/helpers/terminator"

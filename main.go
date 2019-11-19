@@ -6,7 +6,8 @@ import (
 	"os"
 
 	"github.com/urfave/cli"
-	. "github.com/zhanbei/static-server/configs"
+	. "github.com/zhanbei/static-server/conf"
+	"github.com/zhanbei/static-server/configs"
 	"github.com/zhanbei/static-server/db"
 	"github.com/zhanbei/static-server/helpers/terminator"
 	"github.com/zhanbei/static-server/libs"
@@ -82,7 +83,7 @@ func Action(c *cli.Context) error {
 
 // FIX-ME Use a default configuration file, like `vhss.(yaml|toml|json)`.
 func ActionConfigurationFile(c *cli.Context, confFile string) error {
-	cfg, err := LoadServerConfigures(confFile)
+	cfg, err := configs.LoadServerConfigures(confFile)
 	if err != nil {
 		terminator.ExitWithPreLaunchServerError(err, "Loading and validating the configures failed!")
 	}
