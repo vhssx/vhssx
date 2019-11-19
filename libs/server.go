@@ -3,13 +3,12 @@ package libs
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/handlers"
 	"github.com/zhanbei/serve-static"
 	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/helpers/terminator"
-	"github.com/zhanbei/static-server/utils"
+	"github.com/zhanbei/static-server/helpers/writersHelper"
 )
 
 func RealServer(cfg *conf.Configure) error {
@@ -32,13 +31,9 @@ func RealServer(cfg *conf.Configure) error {
 	fmt.Println("Looking after directory:", cfg.RootDir)
 	gor := cfg.GorillaOptions
 	if gor != nil && gor.Enabled {
-		if gor.Stdout || utils.NotEmpty(gor.Target) {
-			if gor.Stdout {
-				handler = handlers.CombinedLoggingHandler(os.Stdout, handler)
-			}
-			if utils.NotEmpty(gor.Target) && gor.LogWriter != nil {
-				handler = handlers.CombinedLoggingHandler(gor.LogWriter, handler)
-			}
+		target := writersHelper.StdoutVsFileWriter(gor.Stdout, gor.LogWriter)
+		if target != nil {
+			handler = handlers.CombinedLoggingHandler(target, handler)
 		} else {
 			fmt.Println("Warning: both the stdout and the target are nil!")
 		}

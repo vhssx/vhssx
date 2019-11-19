@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/zhanbei/static-server/conf"
+	"github.com/zhanbei/static-server/helpers/writersHelper"
 )
 
 var _ IRecorder = (*Recorder)(nil)
@@ -57,7 +58,7 @@ func (m *Recorder) DoRecord(start, end time.Time, realIp string, req *http.Reque
 		NewResponse(code, header, end.Sub(start)),
 		GetMilliseconds(start),
 	}
-	target := twoWriters(m.Stdout, m.LogWriter)
+	target := writersHelper.StdoutVsFileWriter(m.Stdout, m.LogWriter)
 	_, err := m.Record(target, record)
 	return err
 }
