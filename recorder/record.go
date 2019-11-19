@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+var _ IRecord = (*Record)(nil)
+
 // The record of a single request, with device and response.
 // Naming: Record, RequestRecord, ServiceRecords
 type Record struct {

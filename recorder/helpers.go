@@ -1,6 +1,8 @@
 package recorder
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 )
@@ -19,4 +21,15 @@ func twoWriters(stdout bool, file *os.File) io.Writer {
 			return io.MultiWriter(os.Stdout, file)
 		}
 	}
+}
+
+// Print out the record, once there are failures when serializing recording.
+func PrintFailedRecordText(record string) {
+	fmt.Println("-+/>", record)
+}
+
+// Print out the record, once there are failures when serializing recording.
+func PrintFailedRecord(record interface{}) {
+	bts, _ := json.Marshal(record)
+	PrintFailedRecordText(string(bts))
 }

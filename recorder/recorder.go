@@ -11,6 +11,8 @@ import (
 	"github.com/zhanbei/static-server/conf"
 )
 
+var _ IRecorder = (*Recorder)(nil)
+
 type Recorder struct {
 	*conf.OptionLogger
 }
@@ -24,15 +26,25 @@ func (m *Recorder) Record(target io.Writer, record IRecord) (int, error) {
 		return -1, nil
 	}
 	if m.Format == conf.LoggerFormatText {
-		return fmt.Fprintln(target, record.ToCombinedLog())
+		content := record.ToCombinedLog()
+		n, err := fmt.Fprintln(target, content)
+		if err != nil {
+			PrintFailedRecordText(content)
+		}
+		return n, err
 	} else if m.Format == conf.LoggerFormatJson {
 		bts, err := json.Marshal(record)
 		if err != nil {
 			return -1, err
 		}
-		bts = append(bts, '\n')
-		return target.Write(bts)
+		n, err := target.Write(append(bts, '\n'))
+		if err != nil {
+			PrintFailedRecordText(string(bts))
+		}
+		return n, err
 	} else {
+		content := record.ToCombinedLog()
+		PrintFailedRecordText(content)
 		return -1, errors.New("unsupported logger format: " + string(m.Format))
 	}
 }
