@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/zhanbei/static-server/conf"
+	"github.com/zhanbei/static-server/recorder"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -33,4 +34,17 @@ func ConnectToMongoDb(ops *conf.MongoDbOptions) error {
 
 func GetColRequests() *mongo.Collection {
 	return mDbClient.Database(app.DbName).Collection(app.GetColName(conf.ColRequests))
+}
+
+func InsertRecord(record *Record) error {
+	_, err := col.InsertOne(newCrudContext(), record)
+	return err
+}
+
+// Calling this func asynchronous is recommended.
+func InsertRecordWithErrorProcessed(record *Record) {
+	err := InsertRecord(record)
+	if err != nil {
+		recorder.PrintFailedRecord(record)
+	}
 }

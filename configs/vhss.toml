@@ -23,6 +23,11 @@ enabled = false
 uri = "mongodb://127.0.0.1:27017"
 db = "vhss"
 col = "logging.vhss"
+# FIX-ME Whether to support combined text.
+# No, instead, just add a standard logger.
+# Similar with the builtin JSON logger.
+# No, not necessary to print out.
+#stdout = true
 
 
 # THE START OF #Loggers.
