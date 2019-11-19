@@ -7,6 +7,7 @@ import (
 	"github.com/zhanbei/static-server/conf"
 )
 
+// FIX-ME Think about dynamic hot loader.
 func LoadServerConfigures(mGivenConfigFile string) (*conf.Configure, error) {
 	if mGivenConfigFile == "" {
 		return nil, errors.New("expected configuration file")

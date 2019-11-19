@@ -27,7 +27,7 @@ or heavy and powerful.
 
 ## Configures and Options
 
-Support multiple targets(file/stdout/files/mongodb) in multiple(possible) formats(text/json/custom).
+Support multiple targets(file/stdout/files/mongodb) in multiple(possible) formats(text(common/combined/extended)/json/custom).
 
 | Formats\\Targets | Stdout | File(s) | MongoDB |
 | :---: | :---: | :---: | :---: |
@@ -44,7 +44,7 @@ Tools to convert between `BSON`, `JSON`, and `Text` may be needed.
 		- Hosting static files in the no-trailing-slash mode.
 	- Directory Listing `false`
 		- Listing files of a directory if the `index.html` is not found when in the normal mode.
-	- TrustProxyIp `false`
+	- TrustProxyIp `true`
 		- This server will be running behind a reverse proxy,
 		 and prefer to fetch the remote ip from header [ `X-Remote-Addr` > `X-Forwarded-For` > `IP` ] over `ctx.Request.Ip`.
 - Loggers
