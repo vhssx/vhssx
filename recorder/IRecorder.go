@@ -6,15 +6,11 @@ import (
 )
 
 type IRecorder interface {
-	NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) IRecord
-	DoRecord(record IRecord) error
+	DoRecord(start time.Time, realIp string, req *http.Request, code int, header http.Header) error
 }
 
+// It is responsible for recorder to take over everything, logging to stdout or file. :(
+// No need for record for now!
 type IRecord interface {
-	// Do serialize the record.
-	Save() error
-	// Print something.
-	Log()
-
 	ToCombinedLog() string
 }

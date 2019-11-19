@@ -75,8 +75,7 @@ func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure) http.Handl
 			}
 
 			for _, rec := range recs {
-				record := rec.NewInstance(start, ip, req, lrw.StatusCode, w.Header())
-				_ = rec.DoRecord(record)
+				_ = rec.DoRecord(start, ip, req, lrw.StatusCode, w.Header())
 			}
 		}(time.Now())
 		next.ServeHTTP(lrw, req)
