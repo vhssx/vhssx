@@ -27,10 +27,5 @@ func LoadServerConfigures(mGivenConfigFile string) (*conf.Configure, error) {
 		return mConfig, errors.New("invalid configures, see help for more info")
 	}
 
-	err = mConfig.ValidateFile()
-	if err != nil {
-		return mConfig, errors.New("logical error with valid configures")
-	}
-
 	return mConfig, nil
 }

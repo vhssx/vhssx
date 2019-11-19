@@ -35,8 +35,6 @@ func main() {
 
 			Usage: "The configuration file to be used.",
 
-			Value: "configuration file",
-
 			Destination: &OptionConfiguresFile,
 		},
 		cli.BoolFlag{
@@ -81,7 +79,11 @@ func Action(c *cli.Context) error {
 func ActionConfigurationFile(c *cli.Context, confFile string) error {
 	cfg, err := configs.LoadServerConfigures(confFile)
 	if err != nil {
-		terminator.ExitWithPreLaunchServerError(err, "Loading and validating the configures failed!")
+		terminator.ExitWithConfigError(err, "Loading and validating the configures failed!")
+	}
+	err = cfg.ValidateFile()
+	if err != nil {
+		terminator.ExitWithPreLaunchServerError(err, "Validating the required resources following configures failed!")
 	}
 	bts, err := json.Marshal(cfg)
 	fmt.Println("Loading configures:", string(bts))

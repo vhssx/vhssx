@@ -45,7 +45,7 @@ func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure) http.Handl
 
 	recorders := make([]IRecorder, 0)
 
-	for _, logger := range *cfg.Loggers {
+	for _, logger := range cfg.Loggers {
 		if !logger.Enabled {
 			continue
 		}

@@ -25,7 +25,7 @@ type Configure struct {
 
 	Server *ServerOptions `json:"server"`
 
-	Loggers *OptionLoggers `json:"loggers"`
+	Loggers OptionLoggers `json:"loggers"`
 
 	MongoDbOptions *MongoDbOptions `json:"mongo"`
 
@@ -49,7 +49,7 @@ func (m *Configure) IsValid() bool {
 	}
 
 	if m.Loggers != nil {
-		for _, logger := range *m.Loggers {
+		for _, logger := range m.Loggers {
 			if !logger.IsValid() {
 				return false
 			}
@@ -67,8 +67,21 @@ func (m *Configure) IsValid() bool {
 	return m.Server.IsValid()
 }
 
-// Validate the required resources.
+// Validate( and load) the required resources.
 func (m *Configure) ValidateFile() error {
+	if m.Loggers != nil {
+		for _, logger := range m.Loggers {
+			if err := logger.ValidateRequiredResources(); err != nil {
+				return err
+			}
+		}
+	}
+
+	if m.GorillaOptions != nil {
+		if err := m.GorillaOptions.ValidateRequiredResources(); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

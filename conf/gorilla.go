@@ -36,3 +36,15 @@ func (m *OptionLoggerGorilla) IsValid() bool {
 	}
 	return true
 }
+
+func (m *OptionLoggerGorilla) ValidateRequiredResources() error {
+	if !m.Enabled {
+		return nil
+	}
+	if !exist(m.Target) {
+		return nil
+	}
+	writer, err := GetFileWriter(m.Target)
+	m.LogWriter = writer
+	return err
+}

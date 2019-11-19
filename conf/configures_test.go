@@ -13,7 +13,7 @@ func TestConfigure_IsValid(t *testing.T) {
 		".",
 		"8080",
 		&ServerOptions{true, false, true, true},
-		&[]*OptionLogger{
+		[]*OptionLogger{
 			NewLogger("json", false, ""),
 			&OptionLogger{false, "bson", false, false, "", nil},
 		},
@@ -26,7 +26,7 @@ func TestConfigure_IsValid(t *testing.T) {
 		".",
 		"8080",
 		NewDefaultServerOptions(),
-		&[]*OptionLogger{
+		[]*OptionLogger{
 			NewLogger("json", false, "logs/whatever.log"),
 		},
 		&MongoDbOptions{true, "mongodb://127.0.0.1:27017", "vhss", "logging.vhss"},
@@ -48,7 +48,7 @@ func validateConfigures(t *testing.T, testCase string, cfg *Configure, expected 
 	}
 	as("cfg.IsValid()", cfg.IsValid())
 	as("cfg.Server.IsValid()", cfg.Server.IsValid())
-	for i, logger := range *cfg.Loggers {
+	for i, logger := range cfg.Loggers {
 		as("cfg.Loggers["+strconv.Itoa(i)+"].IsValid()", logger.IsValid())
 	}
 	as("cfg.MongoDbOptions.IsValid()", cfg.MongoDbOptions.IsValid())
