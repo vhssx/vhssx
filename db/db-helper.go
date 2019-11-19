@@ -1,13 +1,14 @@
 package db
 
 import (
+	"github.com/zhanbei/static-server/configs"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var (
-	app *MongoDbOptions
+	app *configs.MongoDbOptions
 
 	mDbClient *mongo.Client
 
@@ -15,7 +16,7 @@ var (
 )
 
 // Initialize the mongodb connection, and store as global variables.
-func ConnectToMongoDb(ops *MongoDbOptions) error {
+func ConnectToMongoDb(ops *configs.MongoDbOptions) error {
 	client, err := mongo.Connect(NewTimoutContext(10), options.Client().ApplyURI(ops.Uri))
 	if err != nil {
 		return err
@@ -31,5 +32,5 @@ func ConnectToMongoDb(ops *MongoDbOptions) error {
 }
 
 func GetColRequests() *mongo.Collection {
-	return mDbClient.Database(app.DbName).Collection(app.GetColName(ColRequests))
+	return mDbClient.Database(app.DbName).Collection(app.GetColName(configs.ColRequests))
 }

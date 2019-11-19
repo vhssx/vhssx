@@ -19,7 +19,7 @@ func RealServer(cfg *configs.Configure) error {
 		// Hosting in the normal mode.
 		handler = GetNoDirListingHandler(cfg.RootDir, ops.DirectoryListing)
 	} else {
-		fmt.Println("Hosting static files in the " + OptionNameNoTrailingSlash + " mode.")
+		fmt.Println("Hosting static files in the " + configs.OptionNameNoTrailingSlash + " mode.")
 		if ops.UsingVirtualHost {
 			fmt.Println("Enabled virtual hosting based on request.Host; @see https://en.wikipedia.org/wiki/Virtual_hosting.")
 		}

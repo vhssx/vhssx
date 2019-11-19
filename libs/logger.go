@@ -61,7 +61,7 @@ func StructuredLoggingHandler(next http.Handler, cfg *configs.Configure) http.Ha
 	gor := cfg.GorillaOptions
 	if (gor == nil || !gor.Enabled) && (mon == nil || !mon.Enabled) && len(recorders) == 0 { // <= 0 {
 		// Add a default console(stdout) logger when there is no logger configured!
-		logger := NewLogger(LoggerFormatText, true, "")
+		logger := configs.NewLogger(configs.LoggerFormatText, true, "")
 		recorder := NewRecorder(logger)
 		recorders = append(recorders, recorder)
 	}

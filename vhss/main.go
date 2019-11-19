@@ -4,8 +4,9 @@ import (
 	"os"
 
 	"github.com/urfave/cli"
+	. "github.com/zhanbei/static-server/configs"
 	"github.com/zhanbei/static-server/helpers/terminator"
-	. "github.com/zhanbei/static-server/libs"
+	"github.com/zhanbei/static-server/libs"
 )
 
 var ops = new(ServerOptions)
@@ -71,5 +72,5 @@ func Action(c *cli.Context) error {
 	rootDir = ValidateArgRootDirOrExit(rootDir)
 
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return RealServer(ops, address, rootDir, new(Recorder))
+	return libs.RealServer(&Configure{address, rootDir, ops, nil, nil, nil})
 }

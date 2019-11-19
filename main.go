@@ -6,10 +6,10 @@ import (
 	"os"
 
 	"github.com/urfave/cli"
-	"github.com/zhanbei/static-server/configs"
+	. "github.com/zhanbei/static-server/configs"
 	"github.com/zhanbei/static-server/db"
 	"github.com/zhanbei/static-server/helpers/terminator"
-	. "github.com/zhanbei/static-server/libs"
+	"github.com/zhanbei/static-server/libs"
 	"github.com/zhanbei/static-server/utils"
 )
 
@@ -82,7 +82,7 @@ func Action(c *cli.Context) error {
 
 // FIX-ME Use a default configuration file, like `vhss.(yaml|toml|json)`.
 func ActionConfigurationFile(c *cli.Context, confFile string) error {
-	cfg, err := configs.LoadServerConfigures(confFile)
+	cfg, err := LoadServerConfigures(confFile)
 	if err != nil {
 		terminator.ExitWithPreLaunchServerError(err, "Loading and validating the configures failed!")
 	}
@@ -98,7 +98,7 @@ func ActionConfigurationFile(c *cli.Context, confFile string) error {
 		}
 	}
 
-	return RealServer(cfg)
+	return libs.RealServer(cfg)
 }
 
 func ActionCliArguments(c *cli.Context, ops *ServerOptions) error {
@@ -118,5 +118,5 @@ func ActionCliArguments(c *cli.Context, ops *ServerOptions) error {
 
 	fmt.Println("Loading arguments:", address, rootDir, ops)
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return RealServer(&configs.Configure{rootDir, address, ops, nil, nil, nil})
+	return libs.RealServer(&Configure{rootDir, address, ops, nil, nil, nil})
 }

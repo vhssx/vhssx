@@ -1,4 +1,4 @@
-package db
+package configs
 
 const (
 	ColRequests = "requests"

@@ -19,3 +19,21 @@
 - Runtime Reload
 	- No Panics
 	- Hot Loading
+
+## Packages and Modules
+
+- Applications/Entrances
+	- vhssl
+	- vhssdb
+- Core Libraries
+	- MongoDB
+	- Real Server
+		- Built-in Recorder
+- Configuration Options
+	- Loggers
+		- Basic Logger
+		- Gorilla Logger
+	- MongoDB Options
+- Other Libs
+	- Helpers
+	- utils
