@@ -11,6 +11,7 @@ import (
 	"github.com/zhanbei/static-server/db"
 	"github.com/zhanbei/static-server/helpers/terminator"
 	"github.com/zhanbei/static-server/libs"
+	"github.com/zhanbei/static-server/recorder"
 	"github.com/zhanbei/static-server/utils"
 )
 
@@ -87,7 +88,7 @@ func ActionConfigurationFile(c *cli.Context, confFile string) error {
 	}
 	bts, err := json.Marshal(cfg)
 	fmt.Println("Loading configures:", string(bts))
-	fmt.Println(cfg, cfg.Server, cfg.Loggers, cfg.MongoDbOptions, confFile)
+	fmt.Println(cfg, cfg.Server, cfg.Loggers, cfg.MongoDbOptions, cfg.GorillaOptions, confFile)
 
 	mon := cfg.MongoDbOptions
 	if mon != nil && mon.Enabled {
@@ -97,7 +98,18 @@ func ActionConfigurationFile(c *cli.Context, confFile string) error {
 		}
 	}
 
-	return libs.RealServer(cfg)
+	loggers := recorder.GetActiveRecorders(cfg.Loggers)
+	if cfg.MongoDbOptions != nil {
+		loggers = append(loggers, db.GetMongoRecorder(cfg.MongoDbOptions))
+	}
+
+	gor := cfg.GorillaOptions
+	if (gor == nil || !gor.Enabled) && len(loggers) == 0 {
+		// Add a default console(stdout) logger when there is no logger configured!
+		loggers = append(loggers, recorder.GetDefaultRecorder())
+	}
+
+	return libs.RealServer(cfg, loggers)
 }
 
 func ActionCliArguments(c *cli.Context, ops *ServerOptions) error {
@@ -117,5 +129,5 @@ func ActionCliArguments(c *cli.Context, ops *ServerOptions) error {
 
 	fmt.Println("Loading arguments:", address, rootDir, ops)
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return libs.RealServer(&Configure{rootDir, address, ops, nil, nil, nil})
+	return libs.RealServer(&Configure{rootDir, address, ops, nil, nil, nil}, recorder.GetDefaultRecorders())
 }

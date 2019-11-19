@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+type IRecorders = []IRecorder
+
 type IRecorder interface {
 	DoRecord(start, end time.Time, realIp string, req *http.Request, code int, header http.Header) error
 }

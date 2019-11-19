@@ -9,9 +9,10 @@ import (
 	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/helpers/terminator"
 	"github.com/zhanbei/static-server/helpers/writersHelper"
+	"github.com/zhanbei/static-server/recorder"
 )
 
-func RealServer(cfg *conf.Configure) error {
+func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
 	ops := cfg.Server
 	var handler http.Handler
 	if !ops.NoTrailingSlash {
@@ -42,7 +43,7 @@ func RealServer(cfg *conf.Configure) error {
 	server := &http.Server{
 		Addr: cfg.Address,
 
-		Handler: StructuredLoggingHandler(handler, cfg),
+		Handler: StructuredLoggingHandler(handler, cfg, loggers),
 	}
 
 	fmt.Println("Server is running at:", cfg.Address)

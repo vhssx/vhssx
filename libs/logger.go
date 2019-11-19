@@ -1,7 +1,6 @@
 package libs
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -41,29 +40,8 @@ func (m *ResponseLoggingWriter) WriteHeader(code int) {
 	m.ResponseWriter.WriteHeader(code)
 }
 
-func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure) http.HandlerFunc {
+func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure, recs recorder.IRecorders) http.HandlerFunc {
 	ops := cfg.Server
-
-	recs := make([]recorder.IRecorder, 0)
-
-	for _, logger := range cfg.Loggers {
-		if !logger.Enabled {
-			continue
-		}
-		if logger.PerHost {
-			fmt.Println("Not supported logger#PerHost:", logger)
-			continue
-		}
-		recs = append(recs, recorder.NewRecorder(logger))
-	}
-
-	mon := cfg.MongoDbOptions
-	gor := cfg.GorillaOptions
-	if (gor == nil || !gor.Enabled) && (mon == nil || !mon.Enabled) && len(recs) == 0 { // <= 0 {
-		// Add a default console(stdout) logger when there is no logger configured!
-		logger := conf.NewLogger(conf.LoggerFormatText, true, "")
-		recs = append(recs, recorder.NewRecorder(logger))
-	}
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		lrw := NewResponseLoggingWriter(w)
