@@ -19,6 +19,10 @@
 - Runtime Reload
 	- No Panics
 	- Hot Loading
+- Failed Records
+	- Writing to file or Stdout?
+- Log Format
+	- How to note down the request performance.
 
 ## Packages and Modules
 
@@ -37,3 +41,38 @@
 - Other Libs
 	- Helpers
 	- utils
+
+## Default Logger
+
+- Console Logger in the Combined Log Format
+	- No Gorilla Logger, Custom Loggers, and MongoDB Logger.
+
+## Schedules
+
+- [x] Upgrading MongoDB
+- [x] Combine Gorilla Writers
+- [x] Extract IRecorder
+- [x] Upgrade recorder times.
+- [x] Integrating MongoDB
+- [x] Upgrade the logger formats(combined/extended).
+- [ ] Upgrading the Cli Package
+- [ ] Add a cmd/test(-t) to validate the specific configures and report.
+
+## Use Cases
+
+1. Default `+`
+	- `Gorilla/Combined -> Stdout/File`
+1. Standard `+`
+	- `Gorilla/Combined -> Stdout/File`
+	- `JSON -> File`
+1. Extended `+++`
+	- `Builtin/Extended -> Stdout/File`
+	- `JSON -> File`
+1. Mongo `+++++`
+	- `Builtin/Extended -> Stdout/File`
+	- `BSON -> MongoDB`
+1. Production `+++++`
+	- `Gorilla/Combined -> File`
+	- `Builtin/Extended -> File`
+	- `JSON -> File`
+	- `BSON -> MongoDB`
