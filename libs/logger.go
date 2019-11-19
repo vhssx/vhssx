@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/zhanbei/static-server/conf"
+	"github.com/zhanbei/static-server/recorder"
 )
 
 func getRemoteIp(header http.Header, original string) string {
@@ -43,7 +44,7 @@ func (m *ResponseLoggingWriter) WriteHeader(code int) {
 func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure) http.HandlerFunc {
 	ops := cfg.Server
 
-	recorders := make([]IRecorder, 0)
+	recs := make([]recorder.IRecorder, 0)
 
 	for _, logger := range cfg.Loggers {
 		if !logger.Enabled {
@@ -53,17 +54,15 @@ func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure) http.Handl
 			fmt.Println("Not supported logger#PerHost:", logger)
 			continue
 		}
-		recorder := NewRecorder(logger)
-		recorders = append(recorders, recorder)
+		recs = append(recs, recorder.NewRecorder(logger))
 	}
 
 	mon := cfg.MongoDbOptions
 	gor := cfg.GorillaOptions
-	if (gor == nil || !gor.Enabled) && (mon == nil || !mon.Enabled) && len(recorders) == 0 { // <= 0 {
+	if (gor == nil || !gor.Enabled) && (mon == nil || !mon.Enabled) && len(recs) == 0 { // <= 0 {
 		// Add a default console(stdout) logger when there is no logger configured!
 		logger := conf.NewLogger(conf.LoggerFormatText, true, "")
-		recorder := NewRecorder(logger)
-		recorders = append(recorders, recorder)
+		recs = append(recs, recorder.NewRecorder(logger))
 	}
 
 	return func(w http.ResponseWriter, req *http.Request) {
@@ -75,9 +74,9 @@ func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure) http.Handl
 				ip = getRemoteIp(req.Header, ip)
 			}
 
-			for _, recorder := range recorders {
-				record := recorder.NewInstance(start, ip, req, lrw.StatusCode, w.Header())
-				_ = recorder.DoRecord(record)
+			for _, rec := range recs {
+				record := rec.NewInstance(start, ip, req, lrw.StatusCode, w.Header())
+				_ = rec.DoRecord(record)
 			}
 		}(time.Now())
 		next.ServeHTTP(lrw, req)

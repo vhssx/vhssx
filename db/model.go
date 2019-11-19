@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/zhanbei/static-server/libs"
+	"github.com/zhanbei/static-server/recorder"
 )
 
 type Recorder struct{}
@@ -15,13 +15,13 @@ func NewRecorder() *Recorder {
 	return new(Recorder)
 }
 
-func (m *Recorder) NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) libs.IRecord {
+func (m *Recorder) NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) recorder.IRecord {
 	return &Record{
 		NewObjectId(),
-		libs.NewDevice(realIp, req.UserAgent()),
-		libs.NewRequest(req),
-		libs.NewResponse(code, header, time.Since(start)),
-		libs.GetCurrentMilliseconds(),
+		recorder.NewDevice(realIp, req.UserAgent()),
+		recorder.NewRequest(req),
+		recorder.NewResponse(code, header, time.Since(start)),
+		recorder.GetCurrentMilliseconds(),
 	}
 }
 
@@ -30,11 +30,11 @@ func (m *Recorder) NewInstance(start time.Time, realIp string, req *http.Request
 type Record struct {
 	Id ObjectId `json:"_id"`
 
-	Device *libs.Device `json:"device"`
+	Device *recorder.Device `json:"device"`
 
-	Request *libs.Request `json:"req"`
+	Request *recorder.Request `json:"req"`
 
-	Response *libs.Response `json:"res"`
+	Response *recorder.Response `json:"res"`
 
 	Time int64 `json:"time"`
 }
