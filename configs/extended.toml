@@ -1,0 +1,15 @@
+
+[[loggers]]
+enabled = true
+format = "extended"
+perHost = false
+stdout = false
+target = "logs/extended.log"
+
+[[loggers]]
+enabled = true
+format = "json"
+perHost = false
+stdout = false
+target = "logs/json.log"
+

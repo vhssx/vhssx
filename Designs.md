@@ -60,7 +60,9 @@
 
 ## Use Cases
 
-1. Default `+`
+Use `stdout` target for development or by default, while use the `file` target for production.
+
+1. Minimal `+`
 	- `Gorilla/Combined -> Stdout/File`
 1. Standard `+`
 	- `Gorilla/Combined -> Stdout/File`
@@ -71,7 +73,7 @@
 1. Mongo `+++++`
 	- `Builtin/Extended -> Stdout/File`
 	- `BSON -> MongoDB`
-1. Production `+++++`
+1. Development `+++++`
 	- `Gorilla/Combined -> File`
 	- `Builtin/Extended -> File`
 	- `JSON -> File`

@@ -1,0 +1,29 @@
+
+[mongo]
+enabled = true
+uri = "mongodb://127.0.0.1:27017"
+db = "vhss"
+col = "logging.vhss"
+
+[gorilla]
+enabled = true
+format = "combined"
+stdout = false
+target = "logs/gorilla.log"
+
+
+# THE START OF #Loggers.
+[[loggers]]
+enabled = true
+format = "extended"
+perHost = false
+stdout = false
+target = "logs/extended.log"
+# The second logger.
+[[loggers]]
+enabled = true
+format = "json"
+perHost = false
+stdout = false
+target = "logs/json.log"
+# THE END OF #Loggers.

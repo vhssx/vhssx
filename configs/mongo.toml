@@ -1,0 +1,14 @@
+
+[mongo]
+enabled = true
+uri = "mongodb://127.0.0.1:27017"
+db = "vhss"
+col = "logging.vhss"
+
+
+[[loggers]]
+enabled = true
+format = "extended"
+perHost = false
+stdout = false
+target = "logs/extended.log"

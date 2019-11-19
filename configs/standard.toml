@@ -1,0 +1,15 @@
+
+[gorilla]
+# From gorrilla/handlers, there are logs of loggers can be facilitated!
+enabled = true
+format = "combined"
+stdout = false
+target = "logs/gorilla.log"
+
+
+[[loggers]]
+enabled = true
+format = "json"
+perHost = false
+stdout = false
+target = "logs/json.log"
