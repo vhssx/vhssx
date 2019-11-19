@@ -90,16 +90,14 @@ func ActionConfigurationFile(c *cli.Context, confFile string) error {
 	fmt.Println("Loading configures:", string(bts))
 	fmt.Println(cfg, cfg.Server, cfg.Loggers, cfg.MongoDbOptions, cfg.GorillaOptions, confFile)
 
+	loggers := recorder.GetActiveRecorders(cfg.Loggers)
+
 	mon := cfg.MongoDbOptions
 	if mon != nil && mon.Enabled {
 		err = db.ConnectToMongoDb(cfg.MongoDbOptions)
 		if err != nil {
 			terminator.ExitWithPreLaunchServerError(err, "Connecting to mongodb failed!")
 		}
-	}
-
-	loggers := recorder.GetActiveRecorders(cfg.Loggers)
-	if cfg.MongoDbOptions != nil {
 		loggers = append(loggers, db.GetMongoRecorder(cfg.MongoDbOptions))
 	}
 
