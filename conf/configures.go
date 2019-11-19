@@ -29,7 +29,7 @@ type Configure struct {
 
 	MongoDbOptions *MongoDbOptions `json:"mongo"`
 
-	GorillaOptions *OptionLoggerGorilla `json:"mongo"`
+	GorillaOptions *OptionLoggerGorilla `json:"gorilla"`
 }
 
 var has = utils.NotEmpty

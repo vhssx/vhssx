@@ -45,7 +45,11 @@ func (m *Recorder) Record(target io.Writer, record IRecord) (int, error) {
 	if m.Format == conf.LoggerFormatText {
 		return fmt.Fprintln(target, record.ToCombinedLog())
 	} else if m.Format == conf.LoggerFormatJson {
-		bts, _ := json.Marshal(m)
+		bts, err := json.Marshal(record)
+		if err != nil {
+			return -1, err
+		}
+		bts = append(bts, '\n')
 		return target.Write(bts)
 	} else {
 		return -1, errors.New("unsupported logger format: " + string(m.Format))

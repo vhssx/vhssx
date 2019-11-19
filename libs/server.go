@@ -36,14 +36,8 @@ func RealServer(cfg *conf.Configure) error {
 			if gor.Stdout {
 				handler = handlers.CombinedLoggingHandler(os.Stdout, handler)
 			}
-			if utils.NotEmpty(gor.Target) {
-				// FIX-ME
-				writer, err := os.Open(gor.Target)
-				if err != nil {
-					fmt.Println("Failed to open file to write logs:", err)
-				} else {
-					handler = handlers.CombinedLoggingHandler(writer, handler)
-				}
+			if utils.NotEmpty(gor.Target) && gor.LogWriter != nil {
+				handler = handlers.CombinedLoggingHandler(gor.LogWriter, handler)
 			}
 		} else {
 			fmt.Println("Warning: both the stdout and the target are nil!")
