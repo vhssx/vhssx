@@ -7,11 +7,34 @@ import (
 type LoggerFormat string
 
 const (
-	// Combined Text
+	// Default Log Format = #LoggerFormatExtended
 	LoggerFormatText LoggerFormat = "text"
+
+	LoggerFormatCommon LoggerFormat = "common"
+
+	LoggerFormatCombined LoggerFormat = "combined"
+
+	LoggerFormatVirtualHosts LoggerFormat = "vhosts"
+
+	LoggerFormatExtended LoggerFormat = "extended"
 	// JSON with Rich Data
 	LoggerFormatJson LoggerFormat = "json"
 )
+
+var _formats = make(map[LoggerFormat]bool, 0)
+
+func init() {
+	_formats[LoggerFormatText] = true
+	_formats[LoggerFormatCommon] = true
+	_formats[LoggerFormatCombined] = true
+	_formats[LoggerFormatVirtualHosts] = true
+	_formats[LoggerFormatExtended] = true
+	_formats[LoggerFormatJson] = true
+}
+
+func IsLoggerFormatValid(m LoggerFormat) bool {
+	return _formats[m]
+}
 
 type LoggerTarget = string
 
@@ -54,7 +77,7 @@ func (m *OptionLogger) IsValid() bool {
 	if doPass(m.Enabled) {
 		return true
 	}
-	if m.Format != LoggerFormatText && m.Format != LoggerFormatJson {
+	if !IsLoggerFormatValid(m.Format) {
 		return false
 	}
 	if strictMode() && !exist(m.Target) && !m.Stdout {

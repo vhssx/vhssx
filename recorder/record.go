@@ -22,12 +22,39 @@ type Record struct {
 	Time int64 `json:"time"`
 }
 
-func (m *Record) ToCombinedLog() string {
+// common
+func (m *Record) ToCommonLog() string {
 	req := m.Request
 	res := m.Response
 	return fmt.Sprintf(
-		`%s - - [%s] "%s %s %s" %d %d "%s" "%s" "%s"`,
+		`%s - - [%s] "%s %s %s" %d %d`,
+		m.Device.Ip, time.Unix(m.Time/1000, 0).Format("02/Jan/2006:15:04:05 -0700"), req.Method, req.Path, req.Proto, res.Code, res.ContentLength,
+	)
+}
+
+// combined
+// @see http://httpd.apache.org/docs/current/logs.html#combined
+func (m *Record) ToCombinedLog() string {
+	return m.ToCommonLog() +
+		fmt.Sprintf(` "%s" "%s"`, m.Request.Referer, m.Device.UserAgent)
+}
+
+// vhosts
+// How to note the performance down?
+func (m *Record) ToVirtualHostsLog() string {
+	return m.ToCombinedLog() +
+		fmt.Sprintf(` "%s"`, m.Request.Host)
+}
+
+// extended
+// The extended log format is recommended, since it notes down the hosts and performance.
+func (m *Record) ToExtendedLog() string {
+	req := m.Request
+	res := m.Response
+	return fmt.Sprintf(
+		`%s - - [%s] "%s %s %s" %d %d "%s" "%s" "%s" "%s"`,
 		m.Device.Ip, time.Unix(m.Time/1000, 0).Format("02/Jan/2006:15:04:05 -0700"), req.Method, req.Path, req.Proto, res.Code, res.ContentLength, req.Referer, m.Device.UserAgent,
+		req.Host,
 		time.Duration(m.Response.Duration).String(),
 	)
 }

@@ -22,18 +22,11 @@ func NewRecorder(ops *conf.OptionLogger) *Recorder {
 	return &Recorder{ops}
 }
 
-func (m *Recorder) Record(target io.Writer, record IRecord) (int, error) {
+func (m *Recorder) Record(target io.Writer, record *Record) (int, error) {
 	if target == nil {
 		return -1, nil
 	}
-	if m.Format == conf.LoggerFormatText {
-		content := record.ToCombinedLog()
-		n, err := fmt.Fprintln(target, content)
-		if err != nil {
-			PrintFailedRecordText(content)
-		}
-		return n, err
-	} else if m.Format == conf.LoggerFormatJson {
+	if m.Format == conf.LoggerFormatJson {
 		bts, err := json.Marshal(record)
 		if err != nil {
 			return -1, err
@@ -43,11 +36,33 @@ func (m *Recorder) Record(target io.Writer, record IRecord) (int, error) {
 			PrintFailedRecordText(string(bts))
 		}
 		return n, err
-	} else {
-		content := record.ToCombinedLog()
+	}
+
+	content := ""
+	switch m.Format {
+	case conf.LoggerFormatText:
+		// Default as extended format.
+		content = record.ToExtendedLog()
+	case conf.LoggerFormatCommon:
+		content = record.ToCommonLog()
+	case conf.LoggerFormatCombined:
+		content = record.ToCombinedLog()
+	case conf.LoggerFormatVirtualHosts:
+		content = record.ToVirtualHostsLog()
+	case conf.LoggerFormatExtended:
+		content = record.ToExtendedLog()
+	default:
+		// By default, this is not possible.
+		content := record.ToExtendedLog()
 		PrintFailedRecordText(content)
 		return -1, errors.New("unsupported logger format: " + string(m.Format))
 	}
+
+	n, err := fmt.Fprintln(target, content)
+	if err != nil {
+		PrintFailedRecordText(content)
+	}
+	return n, err
 }
 
 // FIX-ME The strategy of writing to stdout synchronously and writing to file asynchronously may be applied.

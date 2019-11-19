@@ -35,10 +35,10 @@ col = "logging.vhss"
 [[loggers]]
 
 enabled = true
-format = "text"
+format = "extended"
 perHost = false
 stdout = true
-target = "logs/stdout.log" # or file
+target = "logs/extended.log" # or file
 
 [[loggers]]
 
@@ -46,7 +46,7 @@ enabled = true
 format = "json"
 perHost = false
 stdout = false
-target = "logs/app-requests.log"
+target = "logs/json.log"
 
 # THE END OF #Loggers.
 
@@ -56,4 +56,4 @@ target = "logs/app-requests.log"
 enabled = true
 format = "combined"
 stdout = true
-target = ""
+target = "logs/gorilla.log"
