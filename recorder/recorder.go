@@ -38,12 +38,12 @@ func (m *Recorder) Record(target io.Writer, record IRecord) (int, error) {
 }
 
 // FIX-ME The strategy of writing to stdout synchronously and writing to file asynchronously may be applied.
-func (m *Recorder) DoRecord(start time.Time, realIp string, req *http.Request, code int, header http.Header) error {
+func (m *Recorder) DoRecord(start, end time.Time, realIp string, req *http.Request, code int, header http.Header) error {
 	record := &Record{
 		NewDevice(realIp, req.UserAgent()),
 		NewRequest(req),
-		NewResponse(code, header, time.Since(start)),
-		GetCurrentMilliseconds(),
+		NewResponse(code, header, end.Sub(start)),
+		GetMilliseconds(start),
 	}
 	target := twoWriters(m.Stdout, m.LogWriter)
 	_, err := m.Record(target, record)

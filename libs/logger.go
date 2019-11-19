@@ -68,6 +68,8 @@ func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure) http.Handl
 	return func(w http.ResponseWriter, req *http.Request) {
 		lrw := NewResponseLoggingWriter(w)
 		defer func(start time.Time) {
+			// Use a universal ending time for all recorders/loggers.
+			end := time.Now()
 			// Wondering the differences between the deferred function and direct put below `next.ServeHTTP(w, req)`?
 			ip := req.RemoteAddr
 			if ops.TrustProxyIp {
@@ -75,7 +77,7 @@ func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure) http.Handl
 			}
 
 			for _, rec := range recs {
-				_ = rec.DoRecord(start, ip, req, lrw.StatusCode, w.Header())
+				_ = rec.DoRecord(start, end, ip, req, lrw.StatusCode, w.Header())
 			}
 		}(time.Now())
 		next.ServeHTTP(lrw, req)
