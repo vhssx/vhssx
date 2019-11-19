@@ -15,10 +15,7 @@ import (
 
 type IRecorder interface {
 	NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) IRecord
-	// Do serialize the record.
-	Save(record IRecord) error
-	// Print something.
-	Log(record IRecord)
+	DoRecord(record IRecord) error
 }
 
 type IRecord interface {
@@ -38,6 +35,29 @@ func NewRecorder(ops *conf.OptionLogger) *Recorder {
 	return &Recorder{ops}
 }
 
+func twoWriters(stdout bool, file *os.File) io.Writer {
+	if !stdout {
+		if file == nil {
+			return nil
+		} else {
+			return file
+		}
+	} else {
+		if file == nil {
+			return os.Stdout
+		} else {
+			return io.MultiWriter(os.Stdout, file)
+		}
+	}
+}
+
+// FIX-ME The strategy of writing to stdout synchronously and writing to file asynchronously may be applied.
+func (m *Recorder) DoRecord(record IRecord) error {
+	target := twoWriters(m.Stdout, m.LogWriter)
+	_, err := m.Record(target, record)
+	return err
+}
+
 func (m *Recorder) Record(target io.Writer, record IRecord) (int, error) {
 	if target == nil {
 		return -1, nil
@@ -54,21 +74,6 @@ func (m *Recorder) Record(target io.Writer, record IRecord) (int, error) {
 	} else {
 		return -1, errors.New("unsupported logger format: " + string(m.Format))
 	}
-}
-
-func (m *Recorder) Log(record IRecord) {
-	if !m.Stdout {
-		return
-	}
-	_, _ = m.Record(os.Stdout, record)
-}
-
-func (m *Recorder) Save(record IRecord) error {
-	if m.LogWriter == nil {
-		return nil
-	}
-	_, err := m.Record(m.LogWriter, record)
-	return err
 }
 
 func (m *Recorder) NewInstance(start time.Time, realIp string, req *http.Request, code int, header http.Header) IRecord {
