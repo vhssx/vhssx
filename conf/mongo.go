@@ -21,3 +21,10 @@ type MongoDbOptions struct {
 func (m *MongoDbOptions) GetColName(colName string) string {
 	return m.CollectionPrefix + "." + colName
 }
+
+func (m *MongoDbOptions) IsValid() bool {
+	if doPass(m.Enabled) {
+		return true
+	}
+	return exist(m.Uri) && exist(m.DbName) && exist(m.CollectionPrefix)
+}

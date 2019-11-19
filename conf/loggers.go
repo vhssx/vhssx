@@ -51,10 +51,13 @@ func NewLogger(format LoggerFormat, stdout bool, target string) *OptionLogger {
 }
 
 func (m *OptionLogger) IsValid() bool {
-	if m.Format != LoggerFormatText || m.Format != LoggerFormatJson {
+	if doPass(m.Enabled) {
+		return true
+	}
+	if m.Format != LoggerFormatText && m.Format != LoggerFormatJson {
 		return false
 	}
-	if m.Target != LoggerTargetStdout {
+	if strictMode() && !exist(m.Target) && !m.Stdout {
 		return false
 	}
 	return true

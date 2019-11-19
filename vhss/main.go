@@ -9,11 +9,7 @@ import (
 	"github.com/zhanbei/static-server/libs"
 )
 
-var ops = new(ServerOptions)
-
-func init() {
-	ops.TrustProxyIp = true
-}
+var ops = NewDefaultServerOptions()
 
 // The primary program entrance.
 // Support more custom built, like for lite/medium/heavy programs, for cli/gui(with different themes) modes, and for linux/windows/mac platforms.

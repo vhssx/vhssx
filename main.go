@@ -14,11 +14,7 @@ import (
 	"github.com/zhanbei/static-server/utils"
 )
 
-var ops = new(ServerOptions)
-
-func init() {
-	ops.TrustProxyIp = true
-}
+var ops = NewDefaultServerOptions()
 
 var OptionConfiguresFile = ""
 

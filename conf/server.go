@@ -25,6 +25,11 @@ type ServerOptions struct {
 	TrustProxyIp bool `json:"trustProxyIp"`
 }
 
+// Get a default options for server.
+func NewDefaultServerOptions() *ServerOptions {
+	return &ServerOptions{false, false, false, true}
+}
+
 func (m *ServerOptions) IsValid() bool {
 	if !m.NoTrailingSlash && m.UsingVirtualHost {
 		return false
