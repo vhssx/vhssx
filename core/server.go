@@ -18,12 +18,18 @@ func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
 	if !ops.NoTrailingSlash {
 		// Hosting in the normal mode.
 		handler = GetNoDirListingHandler(cfg.RootDir, ops.DirectoryListing)
+	} else if ops.UsingVirtualHost {
+		fmt.Println("Hosting static files in the " + conf.OptionNameNoTrailingSlash + " mode.")
+		fmt.Println("Enabled virtual hosting based on request.Host; @see https://en.wikipedia.org/wiki/Virtual_hosting.")
+		mStaticServer, err := servestatic.NewFileServer(cfg.RootDir, true)
+		if err != nil {
+			terminator.ExitWithPreLaunchServerError(err, "ERROR: The specified www-root-directory does not exist: "+cfg.RootDir)
+		}
+		// Hijack the static handler for customization later.
+		handler = VirtualHostStaticHandler(mStaticServer)
 	} else {
 		fmt.Println("Hosting static files in the " + conf.OptionNameNoTrailingSlash + " mode.")
-		if ops.UsingVirtualHost {
-			fmt.Println("Enabled virtual hosting based on request.Host; @see https://en.wikipedia.org/wiki/Virtual_hosting.")
-		}
-		mStaticServer, err := servestatic.NewFileServer(cfg.RootDir, ops.UsingVirtualHost)
+		mStaticServer, err := servestatic.NewFileServer(cfg.RootDir, false)
 		if err != nil {
 			terminator.ExitWithPreLaunchServerError(err, "ERROR: The specified www-root-directory does not exist: "+cfg.RootDir)
 		}
