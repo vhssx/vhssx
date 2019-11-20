@@ -9,9 +9,9 @@ import (
 	"github.com/urfave/cli"
 	. "github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/configs"
+	"github.com/zhanbei/static-server/core"
 	"github.com/zhanbei/static-server/db"
 	"github.com/zhanbei/static-server/helpers/terminator"
-	"github.com/zhanbei/static-server/libs"
 	"github.com/zhanbei/static-server/recorder"
 	"github.com/zhanbei/static-server/utils"
 )
@@ -117,7 +117,7 @@ func ActionConfigurationFile(c *cli.Context, ops *ServerOptions, confFile string
 		loggers = append(loggers, recorder.GetDefaultRecorder())
 	}
 
-	return libs.RealServer(cfg, loggers)
+	return core.RealServer(cfg, loggers)
 }
 
 func ActionCliArguments(c *cli.Context, ops *ServerOptions) error {
@@ -137,5 +137,5 @@ func ActionCliArguments(c *cli.Context, ops *ServerOptions) error {
 
 	fmt.Println("Loading arguments:", address, rootDir, ops)
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return libs.RealServer(&Configure{rootDir, address, ops, nil, nil, nil}, recorder.GetDefaultRecorders())
+	return core.RealServer(&Configure{rootDir, address, ops, nil, nil, nil}, recorder.GetDefaultRecorders())
 }

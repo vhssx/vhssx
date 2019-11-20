@@ -5,8 +5,8 @@ import (
 
 	"github.com/urfave/cli"
 	. "github.com/zhanbei/static-server/conf"
+	"github.com/zhanbei/static-server/core"
 	"github.com/zhanbei/static-server/helpers/terminator"
-	"github.com/zhanbei/static-server/libs"
 	"github.com/zhanbei/static-server/recorder"
 )
 
@@ -69,5 +69,5 @@ func Action(c *cli.Context) error {
 	rootDir = ValidateArgRootDirOrExit(rootDir)
 
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return libs.RealServer(&Configure{rootDir, address, ops, nil, nil, nil}, recorder.GetDefaultRecorders())
+	return core.RealServer(&Configure{rootDir, address, ops, nil, nil, nil}, recorder.GetDefaultRecorders())
 }
