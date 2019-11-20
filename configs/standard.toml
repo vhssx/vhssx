@@ -1,4 +1,14 @@
 
+# The default www root dir to be served.
+rootDir = "."
+
+[server]
+# The default server options to be modified with your preferences.
+directoryListing = false
+noTrailingSlash = false
+virtualHosting = false
+TrustProxyIp = true
+
 [gorilla]
 # From gorrilla/handlers, there are logs of loggers can be facilitated!
 enabled = true

@@ -1,4 +1,15 @@
 
+# The default www root dir to be served.
+rootDir = "."
+
+[server]
+# The default server options to be modified with your preferences.
+directoryListing = false
+noTrailingSlash = false
+virtualHosting = false
+TrustProxyIp = true
+
+
 [[loggers]]
 enabled = true
 format = "extended"
