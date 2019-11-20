@@ -57,6 +57,29 @@
 - [x] Upgrade the logger formats(combined/extended).
 - [ ] Upgrading the Cli Package
 - [ ] Add a cmd/test(-t) to validate the specific configures and report.
+- [ ] Development in the virtual hosts mode.
+	- Modify the request host following preferences.
+- [ ] Site Configures per site in the virtual hosts modes
+	- [ ] Fallthrough for all sites, like index.html, and favicon.ico, robots.txt
+		- * -> _.default.com
+	- [ ] Scan and Discover Sites for Configures and Cache
+		- [ ] site-config.toml
+		- [ ] no trailing slash
+		- [ ] enable folder listing
+	- [ ] Fallthrough for subdomains, like default favicon.ico `+++`
+		- (*.)domain.com -> _.domain.com
+		- Scan the folders for site configures.
+		- Target/404 > Site/404.html > Scope > Global
+	- [ ] Path Mapping
+		- `^/[^.]+$` -> `index.html`
+	- [ ] Custom Pages(404/50x) for different hosts. `+++`
+		- [ ] Dynamic rendering?
+		- [ ] Enable by default and for all sites?
+		- [ ] pages/404.html
+	- [ ] Parking and Counting `++`
+		- [ ] Dynamic rendering!
+	- [ ] Filters: hide private files, like "README.md", "site-config.toml". `+`
+	- [ ] Robots: support allowed rules and disallowed rules. `---`
 
 ## Use Cases
 
