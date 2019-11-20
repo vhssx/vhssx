@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/urfave/cli"
 	. "github.com/zhanbei/static-server/conf"
@@ -70,15 +71,24 @@ func main() {
 
 func Action(c *cli.Context) error {
 	if utils.NotEmpty(OptionConfiguresFile) {
-		return ActionConfigurationFile(c, OptionConfiguresFile)
+		return ActionConfigurationFile(c, ops, OptionConfiguresFile)
 	} else {
 		return ActionCliArguments(c, ops)
 	}
 }
 
 // FIX-ME Use a default configuration file, like `vhss.(yaml|toml|json)`.
-func ActionConfigurationFile(c *cli.Context, confFile string) error {
-	cfg, err := configs.LoadServerConfigures(confFile)
+func ActionConfigurationFile(c *cli.Context, ops *ServerOptions, confFile string) error {
+	// Prefer the cli arguments, over the configuration file.
+	rawAddress, rawRootDir := "", ""
+	if c.NArg() > 0 {
+		rawAddress = c.Args().Get(0)
+	}
+	if c.NArg() > 1 {
+		rawRootDir = c.Args().Get(1)
+	}
+
+	cfg, err := configs.LoadServerConfigures(confFile, ops, strings.TrimSpace(rawAddress), strings.TrimSpace(rawRootDir))
 	if err != nil {
 		terminator.ExitWithConfigError(err, "Loading and validating the configures failed!")
 	}
