@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/zhanbei/serve-static"
+	"github.com/zhanbei/static-server/helpers/terminator"
 )
 
 type RegularSites = []*RegularSite
@@ -20,16 +21,54 @@ type RegularSite struct {
 	StaticServer *servestatic.FileServer
 }
 
-func NewRegularSite(name string, conf *SiteConfigure) *RegularSite {
-	return &RegularSite{name, conf, nil, nil}
+func NewRegularSite(name, dirSiteRoot string, conf *SiteConfigure) *RegularSite {
+	// FIX-ME Setup server following configures.
+	server, err := servestatic.NewFileServer(dirSiteRoot, false)
+	if err != nil {
+		terminator.ExitWithPreLaunchServerError(err, "Setting up the static server for site ["+name+"]("+dirSiteRoot+") failed!")
+	}
+	return &RegularSite{name, conf, nil, server}
 }
 
 // - routes mappers.
-func (m *RegularSite) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m *RegularSite) ServeHTTP(w http.ResponseWriter, r *http.Request, prevNotFound func()) {
 	// 1. Filters for private pages to protect whitelist(hidden resources).
 	if m.Configure != nil && m.Configure.IsPrivate(r.URL.Path) {
-		w.WriteHeader(http.StatusNotFound)
+		// Responding the custom 404.
+		m.Responding404(w, r, prevNotFound)
 		return
 	}
-	_, _ = w.Write([]byte("Hola, World!"))
+	// Falling through target resources:
+	// 1. Cached Regular Site --> 2. Real Universal Site --> 3. Cached Chained Modular Site --> 4. Not Found 404
+	m.StaticServer.ServeFiles(w, r, func(resolvedLocation string) {
+		// Not found the target resource.
+		if m.ModularSite == nil {
+			m.Responding404(w, r, prevNotFound)
+			return
+		}
+		m.ModularSite.ServeHTTP(w, r, func() {
+			// Not found the target resource by parent modular sites.
+			m.Responding404(w, r, prevNotFound)
+		})
+	})
+}
+
+// Responding 404:
+// 1. Cached Regular Site 404 --> 2. Cached Chained Modular Site --> 3. Not Found 404
+func (m *RegularSite) Responding404(w http.ResponseWriter, r *http.Request, prev func()) {
+	// 1. Cached Regular Site 404
+	exists, location := m.StaticServer.GetFilePathFromStatics("/404.html")
+	if exists {
+		http.ServeFile(w, r, location)
+		return
+	}
+
+	if m.ModularSite != nil {
+		// 2. Cached Chained Modular Site
+		m.ModularSite.Responding404(w, r, prev)
+		return
+	}
+
+	// 3. Not Found 404
+	prev()
 }

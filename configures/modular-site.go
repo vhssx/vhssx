@@ -1,11 +1,11 @@
 package configures
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/zhanbei/serve-static"
+	"github.com/zhanbei/static-server/helpers/terminator"
 )
 
 const PrefixSpecialSites = "_."
@@ -26,8 +26,13 @@ type ModularSite struct {
 }
 
 // Is the site special.
-func NewModularSite(name string, conf *SiteConfigure) *ModularSite {
-	return &ModularSite{name, conf, nil, nil}
+func NewModularSite(name, dirSiteRoot string, conf *SiteConfigure) *ModularSite {
+	// FIX-ME Setup server following configures.
+	server, err := servestatic.NewFileServer(dirSiteRoot, false)
+	if err != nil {
+		terminator.ExitWithPreLaunchServerError(err, "Setting up the static server for site ["+name+"]("+dirSiteRoot+") failed!")
+	}
+	return &ModularSite{name, conf, nil, server}
 }
 
 func (m *ModularSite) IsRootDomain(host string) bool {
@@ -37,7 +42,7 @@ func (m *ModularSite) IsRootDomain(host string) bool {
 	return strings.HasSuffix(host, "."+m.Name) || host == m.Name
 }
 
-func (m *ModularSite) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m *ModularSite) ServeHTTP(w http.ResponseWriter, r *http.Request, notFound func()) {
 	// 1. Filters for private pages to protect whitelist(hidden resources).
 	if m.Configure != nil && m.Configure.IsPrivate(r.URL.Path) {
 		w.WriteHeader(http.StatusNotFound)
@@ -45,8 +50,28 @@ func (m *ModularSite) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	m.StaticServer.ServeFiles(w, r, func(resolvedLocation string) {
-		w.WriteHeader(http.StatusNotFound)
-		// Write the custom 404 page.
-		fmt.Println("Requested file is not found:", "http://"+r.Host+r.RequestURI, "Resolved File Location:", resolvedLocation)
+		// Not found the target resource.
+		if m.ModularSite == nil {
+			notFound()
+			return
+		}
+		m.ModularSite.ServeHTTP(w, r, notFound)
 	})
+}
+
+// Responding 404 through chained modular sites.
+func (m *ModularSite) Responding404(w http.ResponseWriter, r *http.Request, prev func()) {
+	exists, location := m.StaticServer.GetFilePathFromStatics("/404.html")
+	if exists {
+		http.ServeFile(w, r, location)
+		return
+	}
+
+	if m.ModularSite != nil {
+		m.ModularSite.Responding404(w, r, prev)
+		return
+	}
+
+	// Not got handled
+	prev()
 }

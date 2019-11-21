@@ -36,7 +36,8 @@ func ScanSites(rootDir string) (global *ModularSite, modular ModularSites, sites
 			// 简单地检查域名的合法性！
 			continue
 		}
-		conf, err := ReadSiteConfigure(path.Join(rootDir, name))
+		dirSiteRoot := path.Join(rootDir, name)
+		conf, err := ReadSiteConfigure(dirSiteRoot)
 		if err != nil {
 			fmt.Println("Failed to get/parse site configures:", name, err)
 			continue
@@ -49,14 +50,14 @@ func ScanSites(rootDir string) (global *ModularSite, modular ModularSites, sites
 
 		if strings.HasPrefix(name, PrefixSpecialSites) {
 			name = name[2:]
-			site := NewModularSite(name, conf)
+			site := NewModularSite(name, dirSiteRoot, conf)
 			if name == DirGlobalSite {
 				global = site
 			} else {
 				modular = append(modular, site)
 			}
 		} else {
-			sites = append(sites, NewRegularSite(name, conf))
+			sites = append(sites, NewRegularSite(name, dirSiteRoot, conf))
 		}
 	}
 
