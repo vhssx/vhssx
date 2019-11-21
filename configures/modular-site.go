@@ -19,13 +19,15 @@ type ModularSite struct {
 	Name string `json:"name"`
 
 	Configure *SiteConfigure `json:"configure"`
+	// [CACHE] The parent modular site to fallthrough.
+	ModularSite *ModularSite `json:"-"`
 
 	StaticServer *servestatic.FileServer
 }
 
 // Is the site special.
 func NewModularSite(name string, conf *SiteConfigure) *ModularSite {
-	return &ModularSite{name, conf, nil}
+	return &ModularSite{name, conf, nil, nil}
 }
 
 func (m *ModularSite) IsRootDomain(host string) bool {

@@ -14,12 +14,14 @@ type RegularSite struct {
 	Name string `json:"name"`
 
 	Configure *SiteConfigure `json:"configure"`
+	// [CACHE] The parent modular site to fallthrough.
+	ModularSite *ModularSite `json:"-"`
 	// A  static server to serve resources in the no-trailing-slash mode.
 	StaticServer *servestatic.FileServer
 }
 
 func NewRegularSite(name string, conf *SiteConfigure) *RegularSite {
-	return &RegularSite{name, conf, nil}
+	return &RegularSite{name, conf, nil, nil}
 }
 
 // - routes mappers.

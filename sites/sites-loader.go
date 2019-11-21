@@ -13,6 +13,7 @@ var _Regular configures.RegularSites
 var mModular configures.MapModularSites
 var mRegular configures.MapRegularSites
 
+// Cache sites with maps and build relationships.
 func RefreshSites(rootDir string) {
 	_Global, _Modular, _Regular = configures.ScanSites(rootDir)
 
@@ -27,12 +28,26 @@ func RefreshSites(rootDir string) {
 		modular[module.Name] = module
 	}
 	mModular = modular
+
+	buildRelations()
+}
+
+// Relation: Modular Site --> Cached Global Site
+// Relation: Regular Site --> Cached Modular Site || Cached Global Site
+func buildRelations() {
+	for _, module := range _Modular {
+		module.ModularSite = _Global
+	}
+	for _, site := range _Regular {
+		site.ModularSite = GetCachedModularSite(site.Name)
+	}
 }
 
 func GetCachedRegularSite(host string) *configures.RegularSite {
 	return mRegular[host]
 }
 
+// Get the cached (FIX-ME best suit)modular site or the global site.
 func GetCachedModularSite(host string) *configures.ModularSite {
 	if mModular[host] != nil {
 		// Optimization for bare site.
