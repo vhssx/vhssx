@@ -1,5 +1,9 @@
 package configures
 
+import (
+	"strings"
+)
+
 type SiteConfigure struct {
 	DirectoryListing *bool `json:"directoryListing"`
 
@@ -17,4 +21,17 @@ type RouteMapping struct {
 	Regexp string `json:"regexp"`
 
 	Target string `json:"target"`
+}
+
+func (m *SiteConfigure) IsPrivate(path string) bool {
+	if m.PrivatePages == nil || len(m.PrivatePages) == 0 {
+		return false
+	}
+	for _, page := range m.PrivatePages {
+		// FIX-ME Use a more efficient strategy to check whitelist, like using map.
+		if strings.HasPrefix(path, page) {
+			return true
+		}
+	}
+	return false
 }

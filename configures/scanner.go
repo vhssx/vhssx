@@ -18,14 +18,7 @@ const (
 
 // Modular Sites: _.domain.com
 // Real Sites
-func ScanSites(rootDir string) (global *StaticSite, modular StaticSites, sites StaticSites, err error) {
-	stat, err := os.Stat(rootDir)
-	if os.IsNotExist(err) {
-		return
-	}
-	if !stat.IsDir() {
-		return
-	}
+func ScanSites(rootDir string) (global *StaticSite, modular StaticSites, sites StaticSites) {
 	files, err := ioutil.ReadDir(rootDir)
 	if err != nil {
 		return

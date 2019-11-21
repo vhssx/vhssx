@@ -60,26 +60,41 @@
 - [ ] Development in the virtual hosts mode.
 	- Modify the request host following preferences.
 - [ ] Site Configures per site in the virtual hosts modes
-	- [ ] Fallthrough for all sites, like index.html, and favicon.ico, robots.txt
-		- * -> _.default.com
 	- [ ] Scan and Discover Sites for Configures and Cache
 		- [ ] site-config.toml
 		- [ ] no trailing slash
 		- [ ] enable folder listing
-	- [ ] Fallthrough for subdomains, like default favicon.ico `+++`
-		- (*.)domain.com -> _.domain.com
-		- Scan the folders for site configures.
-		- Target/404 > Site/404.html > Scope > Global
 	- [ ] Path Mapping
 		- `^/[^.]+$` -> `index.html`
-	- [ ] Custom Pages(404/50x) for different hosts. `+++`
-		- [ ] Dynamic rendering?
-		- [ ] Enable by default and for all sites?
-		- [ ] pages/404.html
 	- [ ] Parking and Counting `++`
 		- [ ] Dynamic rendering!
 	- [ ] Filters: hide private files, like "README.md", "site-config.toml". `+`
 	- [ ] Robots: support allowed rules and disallowed rules. `---`
+
+## Fallthrough and Custom 404 Page
+
+> Implement with powerful features and optimize later?
+
+Powerful vs Performance?
+
+- [ ] Fallthrough for resources, like:
+    - index.html
+        - Site for all sub sites, or use nginx to direct to the right.
+        - Only for very few special usages.
+    - favicon.ico
+        - This is common because all sub sites may share the same favicon.
+        - Do not copy it again and again.
+    - robots.txt
+    - Other Resources(Scripts and Styles)
+        - May not be copied nor fallthrough, but better be referred cross site.
+- [ ] Fallthrough by domains `+++`
+    - (*.)domain.com --> _.domain.com --> _.default.com
+    - Scan the folders for site configures.
+    - Site/404.html --> Scope/404 --> Global/404
+- [ ] Custom Pages(404/50x) for different hosts. `+++`
+    - [ ] Dynamic rendering?
+    - [ ] Enable by default and for all sites?
+    - [ ] pages/404.html
 
 ## Use Cases
 

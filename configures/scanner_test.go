@@ -9,8 +9,8 @@ import (
 )
 
 func TestScanSites(t *testing.T) {
-	global, modular, sites, err := configures.ScanSites("../demo")
-	fmt.Println("\nerr:", err)
+	global, modular, sites := configures.ScanSites("../demo")
+	fmt.Println()
 	fmt.Println("global:", str(global))
 	fmt.Println("modular:", str(modular))
 	fmt.Println("sites:", str(sites))
