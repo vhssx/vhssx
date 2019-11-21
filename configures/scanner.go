@@ -18,7 +18,7 @@ const (
 
 // Modular Sites: _.domain.com
 // Real Sites
-func ScanSites(rootDir string) (global *StaticSite, modular StaticSites, sites StaticSites) {
+func ScanSites(rootDir string) (global *ModularSite, modular ModularSites, sites RegularSites) {
 	files, err := ioutil.ReadDir(rootDir)
 	if err != nil {
 		return
@@ -47,15 +47,16 @@ func ScanSites(rootDir string) (global *StaticSite, modular StaticSites, sites S
 			sitesWithConfigures = append(sitesWithConfigures, name)
 		}
 
-		site, special := NewSite(name, conf)
-		if special {
-			if site.Name == DirGlobalSite {
+		if strings.HasPrefix(name, PrefixSpecialSites) {
+			name = name[2:]
+			site := NewModularSite(name, conf)
+			if name == DirGlobalSite {
 				global = site
 			} else {
 				modular = append(modular, site)
 			}
 		} else {
-			sites = append(sites, site)
+			sites = append(sites, NewRegularSite(name, conf))
 		}
 	}
 

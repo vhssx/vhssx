@@ -1,36 +1,15 @@
 package core
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/zhanbei/serve-static"
-	"github.com/zhanbei/static-server/configures"
+	"github.com/zhanbei/static-server/sites"
 )
-
-var _Global *configures.StaticSite
-var _Modular, _Sites configures.StaticSites
-var mModular, mSite configures.MapStaticSites
-
-func RefreshSites(rootDir string) {
-	_Global, _Modular, _Sites = configures.ScanSites(rootDir)
-	m := make(configures.MapStaticSites, 0)
-
-	mModular = m
-}
-
-func GetModularSite(host string) *configures.StaticSite {
-	for _, site := range mModular {
-		if site.IsRootDomain(host) {
-			return site
-		}
-	}
-	return nil
-}
 
 // Another pattern is to create server for all existed sites, with standalone configurations.
 func VirtualHostStaticHandler(ss *servestatic.FileServer) http.Handler {
-	RefreshSites(ss.RootDir)
+	sites.RefreshSites(ss.RootDir)
 	return &mStaticServer{ss}
 }
 
@@ -38,36 +17,31 @@ type mStaticServer struct {
 	ss *servestatic.FileServer
 }
 
-// - Take care of hosts in the development mode;
-// - Find the target site configures;
-// - Serve the static file of target site;
-// - Path mapping rendering
-// - Fallthrough
+// Fallthrough Resources:
+//
+// 1. Cached Regular Site --> 2. Real Universal Site --> 3. Cached Chained Modular Site --> 4. Not Found 404
+//
+// Fallthrough 404/etc:
+//
+// 1. Cached Regular Site 404 --> 2. Cached Chained Modular Site --> 3. Not Found 404
 func (m *mStaticServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	site := mSite[r.Host]
-
-	// 1. Filters for private pages to protect whitelist(hidden resources).
-	if site != nil && site.Configure != nil && site.Configure.IsPrivate(r.URL.Path) {
-		w.WriteHeader(http.StatusNotFound)
+	// 1. Fetch the cached target site configures;
+	// The regular site will be preferred, then is the modular site.
+	site := sites.GetCachedRegularSite(r.Host)
+	if site != nil {
+		site.ServeHTTP(w, r)
 		return
 	}
 
 	// 2. Serve static files in the normal way.
 	m.ss.ServeFiles(w, r, func(location string) {
-		// 3. Use routes mappers.
-
-		// Find the target resource failed, hence fallthrough for custom pages.
-		// a. Site/target --> b. Scope/target --> c. Global/target
-		// a. Site/404.html --> b. Scope/404.html --> c. Global/404.html
-		module := GetModularSite(r.Host)
-		if module == nil {
-			w.WriteHeader(http.StatusNotFound)
+		// 3. Get the cached modular sites.
+		module := sites.GetCachedModularSite(r.Host)
+		if module != nil {
+			module.ServeHTTP(w, r)
 			return
 		}
-		module.StaticServer.ServeFiles(w, r, func(resolvedLocation string) {
-			w.WriteHeader(http.StatusNotFound)
-			// Write the custom 404 page.
-			fmt.Println("Requested file is not found:", "http://"+r.Host+r.RequestURI, "Resolved File Location:", location)
-		})
+		// 4. Real Not Found
+		w.WriteHeader(http.StatusNotFound)
 	})
 }
