@@ -30,7 +30,9 @@ func (m *mStaticServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	site := sites.GetCachedRegularSite(r.Host)
 	if site != nil {
 		site.ServeHTTP(w, r, func() {
-			m.Serve404(w, r, nil)
+			site.RespondingCustom404(w, r, func() {
+				m.RespondingDefault404(w, r, nil)
+			})
 		})
 		return
 	}
@@ -40,17 +42,19 @@ func (m *mStaticServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// 3. Get the cached modular sites.
 		module := sites.GetCachedModularSite(r.Host)
 		if module == nil {
-			m.Serve404(w, r, nil)
+			m.RespondingDefault404(w, r, nil)
 			return
 		}
 		module.ServeHTTP(w, r, func() {
-			m.Serve404(w, r, nil)
+			module.Responding404(w, r, func() {
+				m.RespondingDefault404(w, r, nil)
+			})
 		})
 	})
 }
 
 // 4. Real Not Found
-func (m *mStaticServer) Serve404(w http.ResponseWriter, r *http.Request, extra interface{}) {
+func (m *mStaticServer) RespondingDefault404(w http.ResponseWriter, r *http.Request, extra interface{}) {
 	w.WriteHeader(http.StatusNotFound)
 	_, _ = w.Write([]byte("Not found, powered by vhss!\nCreate a _.default.sites/404.html for custom 404 page."))
 	//// Write the custom 404 page.

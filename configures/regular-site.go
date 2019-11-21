@@ -31,11 +31,11 @@ func NewRegularSite(name, dirSiteRoot string, conf *SiteConfigure) *RegularSite 
 }
 
 // - routes mappers.
-func (m *RegularSite) ServeHTTP(w http.ResponseWriter, r *http.Request, prevNotFound func()) {
+func (m *RegularSite) ServeHTTP(w http.ResponseWriter, r *http.Request, notFound func()) {
 	// 1. Filters for private pages to protect whitelist(hidden resources).
 	if m.Configure != nil && m.Configure.IsPrivate(r.URL.Path) {
 		// Responding the custom 404.
-		m.Responding404(w, r, prevNotFound)
+		notFound()
 		return
 	}
 	// Falling through target resources:
@@ -43,19 +43,19 @@ func (m *RegularSite) ServeHTTP(w http.ResponseWriter, r *http.Request, prevNotF
 	m.StaticServer.ServeFiles(w, r, func(resolvedLocation string) {
 		// Not found the target resource.
 		if m.ModularSite == nil {
-			m.Responding404(w, r, prevNotFound)
+			notFound()
 			return
 		}
 		m.ModularSite.ServeHTTP(w, r, func() {
 			// Not found the target resource by parent modular sites.
-			m.Responding404(w, r, prevNotFound)
+			notFound()
 		})
 	})
 }
 
 // Responding 404:
 // 1. Cached Regular Site 404 --> 2. Cached Chained Modular Site --> 3. Not Found 404
-func (m *RegularSite) Responding404(w http.ResponseWriter, r *http.Request, prev func()) {
+func (m *RegularSite) RespondingCustom404(w http.ResponseWriter, r *http.Request, prev func()) {
 	// 1. Cached Regular Site 404
 	exists, location := m.StaticServer.GetFilePathFromStatics("/404.html")
 	if exists {
