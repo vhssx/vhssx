@@ -55,12 +55,14 @@
 - [x] Upgrade recorder times.
 - [x] Integrating MongoDB
 - [x] Upgrade the logger formats(combined/extended).
+- [x] Support _.other.sites
+- [ ] 404 Status Code
 - [ ] Upgrading the Cli Package
 - [ ] Add a cmd/test(-t) to validate the specific configures and report.
 - [ ] Development in the virtual hosts mode.
 	- Modify the request host following preferences.
 - [ ] Site Configures per site in the virtual hosts modes
-	- [ ] Scan and Discover Sites for Configures and Cache
+	- [x] Scan and Discover Sites for Configures and Cache
 		- [ ] site-config.toml
 		- [ ] no trailing slash
 		- [ ] enable folder listing
@@ -77,7 +79,7 @@
 
 Powerful vs Performance?
 
-- [ ] Fallthrough for resources, like:
+- [x] Fallthrough for resources, like:
 	- index.html
 		- Site for all sub sites, or use nginx to direct to the right.
 		- Only for very few special usages.
@@ -88,7 +90,7 @@ Powerful vs Performance?
 	- Other Resources(Scripts and Styles)
 		- May not be copied nor fallthrough, but better be referred cross site.
 		- May be used to as the custom *404* pages, corresponding with the route mapping.
-- [ ] Fallthrough by domains `+++`
+- [x] Fallthrough by domains `+++`
 	- (*.)domain.com --> _.domain.com --> _.default.com
 	- Scan the folders for site configures.
 	- Site/404.html --> Scope/404 --> Global/404

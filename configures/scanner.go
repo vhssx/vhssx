@@ -13,12 +13,14 @@ const (
 	// The global site to fallthrough.
 	DirGlobalSite = "default.sites"
 
+	DirOtherSite = "other.sites"
+
 	FileSiteConfigure = "site.json"
 )
 
 // Modular Sites: _.domain.com
 // Real Sites
-func ScanSites(rootDir string) (global *ModularSite, modular ModularSites, sites RegularSites) {
+func ScanSites(rootDir string) (global, other *ModularSite, modular ModularSites, sites RegularSites) {
 	files, err := ioutil.ReadDir(rootDir)
 	if err != nil {
 		return
@@ -51,9 +53,12 @@ func ScanSites(rootDir string) (global *ModularSite, modular ModularSites, sites
 		if strings.HasPrefix(name, PrefixSpecialSites) {
 			name = name[2:]
 			site := NewModularSite(name, dirSiteRoot, conf)
-			if name == DirGlobalSite {
+			switch name {
+			case DirGlobalSite:
 				global = site
-			} else {
+			case DirOtherSite:
+				other = site
+			default:
 				modular = append(modular, site)
 			}
 		} else {

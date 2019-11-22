@@ -7,6 +7,7 @@ import (
 )
 
 var _Global *configures.ModularSite
+var _Other *configures.ModularSite
 var _Modular configures.ModularSites
 var _Regular configures.RegularSites
 
@@ -15,7 +16,7 @@ var mRegular configures.MapRegularSites
 
 // Cache sites with maps and build relationships.
 func RefreshSites(rootDir string) {
-	_Global, _Modular, _Regular = configures.ScanSites(rootDir)
+	_Global, _Other, _Modular, _Regular = configures.ScanSites(rootDir)
 
 	sites := make(configures.MapRegularSites, 0)
 	for _, site := range _Regular {
@@ -33,8 +34,9 @@ func RefreshSites(rootDir string) {
 }
 
 // Relation: Modular Site --> Cached Global Site
-// Relation: Regular Site --> Cached Modular Site || Cached Global Site
+// Relation: Regular Site --> Cached Modular/Other Site --> Cached Global Site
 func buildRelations() {
+	_Other.ModularSite = _Global
 	for _, module := range _Modular {
 		module.ModularSite = _Global
 	}
@@ -65,6 +67,9 @@ func GetCachedModularSite(host string) *configures.ModularSite {
 		if strings.HasSuffix(host, "."+site.Name) {
 			return site
 		}
+	}
+	if _Other != nil {
+		return _Other
 	}
 	return _Global
 }
