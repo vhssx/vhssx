@@ -57,9 +57,9 @@ func (m *RegularSite) ServeHTTP(w http.ResponseWriter, r *http.Request, notFound
 // 1. Cached Regular Site 404 --> 2. Cached Chained Modular Site --> 3. Not Found 404
 func (m *RegularSite) RespondingCustom404(w http.ResponseWriter, r *http.Request, prev func()) {
 	// 1. Cached Regular Site 404
-	exists, location := m.StaticServer.GetFilePathFromStatics("/404.html")
-	if exists {
-		http.ServeFile(w, r, location)
+	handled, _ := Serve404Page(w, m.StaticServer, Page404Path)
+	// FIX-ME If error is encountered, just call prev() and return.
+	if handled {
 		return
 	}
 

@@ -61,9 +61,9 @@ func (m *ModularSite) ServeHTTP(w http.ResponseWriter, r *http.Request, notFound
 
 // Responding 404 through chained modular sites.
 func (m *ModularSite) Responding404(w http.ResponseWriter, r *http.Request, prev func()) {
-	exists, location := m.StaticServer.GetFilePathFromStatics("/404.html")
-	if exists {
-		http.ServeFile(w, r, location)
+	handled, _ := Serve404Page(w, m.StaticServer, Page404Path)
+	// FIX-ME If error is encountered, just call prev() and return.
+	if handled {
 		return
 	}
 

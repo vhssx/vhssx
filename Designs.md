@@ -56,7 +56,7 @@
 - [x] Integrating MongoDB
 - [x] Upgrade the logger formats(combined/extended).
 - [x] Support _.other.sites
-- [ ] 404 Status Code
+- [x] 404 Status Code
 - [ ] Upgrading the Cli Package
 - [ ] Add a cmd/test(-t) to validate the specific configures and report.
 - [ ] Development in the virtual hosts mode.
