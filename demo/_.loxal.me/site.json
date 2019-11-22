@@ -1,7 +1,6 @@
 {
   "privatePages": [
-    "/site.json",
-    "/404"
+    "/private"
   ],
   "routeMappings": [
     {

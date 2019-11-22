@@ -70,7 +70,7 @@
 		- `^/[^.]+$` -> `index.html`
 	- [ ] Parking and Counting `++`
 		- [ ] Dynamic rendering!
-	- [ ] Filters: hide private files, like "README.md", "site-config.toml". `+`
+	- [x] Filters: hide private files, like "README.md", "site-config.toml". `+`
 	- [ ] Robots: support allowed rules and disallowed rules. `---`
 - [ ] Investigate the static caching problem.
 - [ ] Duplicated logical codes for regular and modular sites.

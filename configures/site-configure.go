@@ -8,6 +8,13 @@ import (
 	"github.com/zhanbei/static-server/utils"
 )
 
+var PrivatePages = []string{
+	// Files starting with a dot.
+	"/.",
+	"/" + FileSiteConfigure,
+	Page404Path,
+}
+
 type SiteConfigure struct {
 	DirectoryListing *bool `json:"directoryListing"`
 
@@ -62,6 +69,12 @@ func (m *SiteConfigure) GetPotentialMappedTarget(path string) string {
 }
 
 func (m *SiteConfigure) IsPrivate(path string) bool {
+	for _, page := range PrivatePages {
+		if strings.HasPrefix(path, page) {
+			// Filter the builtin private files by default.
+			return true
+		}
+	}
 	if m.PrivatePages == nil || len(m.PrivatePages) == 0 {
 		return false
 	}
