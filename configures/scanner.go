@@ -48,6 +48,11 @@ func ScanSites(rootDir string) (global, other *ModularSite, modular ModularSites
 			sitesWithoutConfigures = append(sitesWithoutConfigures, name)
 		} else {
 			sitesWithConfigures = append(sitesWithConfigures, name)
+			err = conf.ValidateRequiredResources()
+			if err != nil {
+				fmt.Println("Failed to pre-build configures:", name, err)
+				continue
+			}
 		}
 
 		if strings.HasPrefix(name, PrefixSpecialSites) {

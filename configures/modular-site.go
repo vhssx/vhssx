@@ -44,8 +44,7 @@ func (m *ModularSite) IsRootDomain(host string) bool {
 
 func (m *ModularSite) ServeHTTP(w http.ResponseWriter, r *http.Request, notFound func()) {
 	// 1. Filters for private pages to protect whitelist(hidden resources).
-	if m.Configure != nil && m.Configure.IsPrivate(r.URL.Path) {
-		w.WriteHeader(http.StatusNotFound)
+	if ServeDynamicContents(w, r, m.Configure, m.StaticServer, notFound) {
 		return
 	}
 

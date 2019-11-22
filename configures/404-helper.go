@@ -27,3 +27,27 @@ func Serve404Page(w http.ResponseWriter, ss *servestatic.FileServer, page string
 	_, _ = w.Write(bts)
 	return true, nil
 }
+
+func ServeDynamicContents(w http.ResponseWriter, r *http.Request, cfg *SiteConfigure, ss *servestatic.FileServer, notFound func()) bool {
+	if cfg == nil {
+		return false
+	}
+	if cfg.IsPrivate(r.URL.Path) {
+		// 1. Filters for private pages to protect whitelist(hidden resources).
+		// Responding the custom 404.
+		notFound()
+		return true
+	}
+	target := cfg.GetPotentialMappedTarget(r.URL.Path)
+	if target != "" {
+		// 2. Custom resources mapping, like  for *Single Page Application* to serve *dynamical* contents.
+		exists, location := ss.GetFilePathFromStatics(target)
+		if exists {
+			http.ServeFile(w, r, location)
+		} else {
+			notFound()
+		}
+		return true
+	}
+	return false
+}

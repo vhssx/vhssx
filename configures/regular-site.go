@@ -33,9 +33,7 @@ func NewRegularSite(name, dirSiteRoot string, conf *SiteConfigure) *RegularSite 
 // - routes mappers.
 func (m *RegularSite) ServeHTTP(w http.ResponseWriter, r *http.Request, notFound func()) {
 	// 1. Filters for private pages to protect whitelist(hidden resources).
-	if m.Configure != nil && m.Configure.IsPrivate(r.URL.Path) {
-		// Responding the custom 404.
-		notFound()
+	if ServeDynamicContents(w, r, m.Configure, m.StaticServer, notFound) {
 		return
 	}
 	// Falling through target resources:

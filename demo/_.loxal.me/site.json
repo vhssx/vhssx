@@ -1,0 +1,12 @@
+{
+  "privatePages": [
+    "/site.json",
+    "/404"
+  ],
+  "routeMappings": [
+    {
+      "pattern": "^/[^.]+$",
+      "target": "/index.html"
+    }
+  ]
+}

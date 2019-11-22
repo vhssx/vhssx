@@ -1,7 +1,11 @@
 package configures
 
 import (
+	"errors"
+	"regexp"
 	"strings"
+
+	"github.com/zhanbei/static-server/utils"
 )
 
 type SiteConfigure struct {
@@ -16,11 +20,45 @@ type SiteConfigure struct {
 	//RobotRules []string `json:"robotRules"`
 }
 
-type RouteMappings = []RouteMapping
+type RouteMappings = []*RouteMapping
 type RouteMapping struct {
-	Regexp string `json:"regexp"`
+	Regexp string `json:"pattern"`
 
 	Target string `json:"target"`
+
+	mRegexp *regexp.Regexp `json:"-"`
+}
+
+func (m *SiteConfigure) ValidateRequiredResources() error {
+	if m.RouteMappings != nil {
+		for _, mapping := range *m.RouteMappings {
+			if !utils.NotEmpty(mapping.Target) || !utils.NotEmpty(mapping.Regexp) {
+				return errors.New("the target and regexp pattern of the router mapping should not be empty")
+			}
+			exp, err := regexp.Compile(mapping.Regexp)
+			if err != nil {
+				return err
+			}
+			mapping.mRegexp = exp
+		}
+	}
+	return nil
+}
+
+func (m *SiteConfigure) GetPotentialMappedTarget(path string) string {
+	if m.RouteMappings == nil {
+		return ""
+	}
+	for _, mapping := range *m.RouteMappings {
+		if mapping.mRegexp == nil {
+			continue
+		}
+		if mapping.mRegexp.MatchString(path) {
+			return mapping.Target
+		}
+		// Check the path, for remapping.
+	}
+	return ""
 }
 
 func (m *SiteConfigure) IsPrivate(path string) bool {

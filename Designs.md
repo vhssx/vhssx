@@ -66,12 +66,14 @@
 		- [ ] site-config.toml
 		- [ ] no trailing slash
 		- [ ] enable folder listing
-	- [ ] Path Mapping
+	- [x] Path Mapping
 		- `^/[^.]+$` -> `index.html`
 	- [ ] Parking and Counting `++`
 		- [ ] Dynamic rendering!
 	- [ ] Filters: hide private files, like "README.md", "site-config.toml". `+`
 	- [ ] Robots: support allowed rules and disallowed rules. `---`
+- [ ] Investigate the static caching problem.
+- [ ] Duplicated logical codes for regular and modular sites.
 
 ## Fallthrough and Custom 404 Page
 
