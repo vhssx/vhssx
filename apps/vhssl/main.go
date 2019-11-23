@@ -68,6 +68,8 @@ func Action(c *cli.Context) error {
 	}
 	rootDir = ValidateArgRootDirOrExit(rootDir)
 
+	cfg := &Configure{rootDir, address, NewDefaultAppOptions(), ops, nil, nil, nil}
+
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return core.RealServer(&Configure{rootDir, address, ops, nil, nil, nil}, recorder.GetDefaultRecorders())
+	return core.RealServer(cfg, recorder.GetDefaultRecorders())
 }

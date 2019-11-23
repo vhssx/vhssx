@@ -136,6 +136,9 @@ func ActionCliArguments(c *cli.Context, ops *ServerOptions) error {
 	rootDir = ValidateArgRootDirOrExit(rootDir)
 
 	fmt.Println("Loading arguments:", address, rootDir, ops)
+
+	cfg := &Configure{rootDir, address, NewDefaultAppOptions(), ops, nil, nil, nil}
+
 	//fmt.Println("listening:", address, mUsingVirtualHost, mNoTrailingSlash)
-	return core.RealServer(&Configure{rootDir, address, ops, nil, nil, nil}, recorder.GetDefaultRecorders())
+	return core.RealServer(cfg, recorder.GetDefaultRecorders())
 }

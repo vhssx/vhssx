@@ -22,6 +22,8 @@ type Configure struct {
 	RootDir string `json:"rootDir"`
 	// The address or port for the server.
 	Address string `json:"address"`
+	// Whether in the development mode.
+	App *OptionsApp `json:"app"`
 
 	Server *ServerOptions `json:"server"`
 
@@ -44,6 +46,10 @@ func (m *Configure) IsValid() bool {
 	m.Address, _ = ValidateArgAddressOrExit(m.Address)
 	m.RootDir = ValidateArgRootDirOrExit(m.RootDir)
 
+	if m.App == nil {
+		m.App = NewDefaultAppOptions()
+	}
+
 	if m.Server == nil {
 		m.Server = NewDefaultServerOptions()
 	}
@@ -64,7 +70,7 @@ func (m *Configure) IsValid() bool {
 		return false
 	}
 
-	return m.Server.IsValid()
+	return m.App.IsValid() && m.Server.IsValid()
 }
 
 // Validate( and load) the required resources.

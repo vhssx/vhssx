@@ -15,6 +15,7 @@ import (
 func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
 	ops := cfg.Server
 	var handler http.Handler
+
 	if !ops.NoTrailingSlash {
 		// Hosting in the normal mode.
 		handler = GetNoDirListingHandler(cfg.RootDir, ops.DirectoryListing)
@@ -27,6 +28,14 @@ func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
 		}
 		// Hijack the static handler for customization later.
 		handler = VirtualHostStaticHandler(mStaticServer)
+
+		if cfg.App.IsInDevelopmentMode() {
+			handler = TrimSuffixDomainForDevelopment(handler, cfg.App.DevDomainSuffix)
+			fmt.Println("Server is running in the DEVELOPMENT mode, with a domain(" + cfg.App.DevDomainSuffix + ") for development.")
+		} else {
+			fmt.Println("Server is running in the PRODUCTION mode.")
+		}
+
 	} else {
 		fmt.Println("Hosting static files in the " + conf.OptionNameNoTrailingSlash + " mode.")
 		mStaticServer, err := servestatic.NewFileServer(cfg.RootDir, false)
@@ -35,7 +44,9 @@ func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
 		}
 		handler = mStaticServer
 	}
+
 	fmt.Println("Looking after directory:", cfg.RootDir)
+
 	gor := cfg.GorillaOptions
 	if gor != nil && gor.Enabled {
 		target := writersHelper.StdoutVsFileWriter(gor.Stdout, gor.LogWriter)

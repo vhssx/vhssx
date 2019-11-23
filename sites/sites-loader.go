@@ -36,7 +36,9 @@ func RefreshSites(rootDir string) {
 // Relation: Modular Site --> Cached Global Site
 // Relation: Regular Site --> Cached Modular/Other Site --> Cached Global Site
 func buildRelations() {
-	_Other.ModularSite = _Global
+	if _Other != nil {
+		_Other.ModularSite = _Global
+	}
 	for _, module := range _Modular {
 		module.ModularSite = _Global
 	}

@@ -57,9 +57,10 @@
 - [x] Upgrade the logger formats(combined/extended).
 - [x] Support _.other.sites
 - [x] 404 Status Code
+- [ ] Support symbolic-linked sites.
 - [ ] Upgrading the Cli Package
 - [ ] Add a cmd/test(-t) to validate the specific configures and report.
-- [ ] Development in the virtual hosts mode.
+- [x] Development in the virtual hosts mode.
 	- Modify the request host following preferences.
 - [ ] Site Configures per site in the virtual hosts modes
 	- [x] Scan and Discover Sites for Configures and Cache
