@@ -15,8 +15,8 @@ var mModular configures.MapModularSites
 var mRegular configures.MapRegularSites
 
 // Cache sites with maps and build relationships.
-func RefreshSites(rootDir string) {
-	_Global, _Other, _Modular, _Regular = configures.ScanSites(rootDir)
+func RefreshSites(rootDir string, devMode bool) {
+	_Global, _Other, _Modular, _Regular = configures.ScanSites(rootDir, devMode)
 
 	sites := make(configures.MapRegularSites, 0)
 	for _, site := range _Regular {

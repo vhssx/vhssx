@@ -14,7 +14,7 @@ const DefaultDevDomainSuffix = "loxal.me"
 
 type OptionsApp struct {
 	Mode string `json:"mode"`
-	// The domain to be used for the development of virtual hosts, if in the development mode.
+	// The domain to be used for the development of virtual hosts, if in the development & virtual hosting modes.
 	// By default, it is loxal.me
 	// Support multiple, if needed.
 	DevDomainSuffix string `json:"devDomain"`

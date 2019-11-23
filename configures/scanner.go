@@ -20,7 +20,7 @@ const (
 
 // Modular Sites: _.domain.com
 // Real Sites
-func ScanSites(rootDir string) (global, other *ModularSite, modular ModularSites, sites RegularSites) {
+func ScanSites(rootDir string, devMode bool) (global, other *ModularSite, modular ModularSites, sites RegularSites) {
 	files, err := ioutil.ReadDir(rootDir)
 	if err != nil {
 		return
@@ -30,7 +30,7 @@ func ScanSites(rootDir string) (global, other *ModularSite, modular ModularSites
 	sitesWithConfigures := make([]string, 0)
 
 	for _, file := range files {
-		if !file.IsDir() {
+		if !file.IsDir() && !(devMode && file.Mode()&os.ModeSymlink != 0) {
 			continue
 		}
 		name := file.Name()

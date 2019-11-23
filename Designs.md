@@ -23,6 +23,8 @@
 	- Writing to file or Stdout?
 - Log Format
 	- How to note down the request performance.
+- Symbolic-linked Sites
+    - Treat as normal directory?
 
 ## Packages and Modules
 
@@ -57,7 +59,7 @@
 - [x] Upgrade the logger formats(combined/extended).
 - [x] Support _.other.sites
 - [x] 404 Status Code
-- [ ] Support symbolic-linked sites.
+- [x] Support symbolic-linked sites.
 - [ ] Upgrading the Cli Package
 - [ ] Add a cmd/test(-t) to validate the specific configures and report.
 - [x] Development in the virtual hosts mode.

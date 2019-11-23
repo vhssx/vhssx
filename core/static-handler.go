@@ -8,8 +8,8 @@ import (
 )
 
 // Another pattern is to create server for all existed sites, with standalone configurations.
-func VirtualHostStaticHandler(ss *servestatic.FileServer) http.Handler {
-	sites.RefreshSites(ss.RootDir)
+func VirtualHostStaticHandler(ss *servestatic.FileServer, devMode bool) http.Handler {
+	sites.RefreshSites(ss.RootDir, devMode)
 	return &mStaticServer{ss}
 }
 

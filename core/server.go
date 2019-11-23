@@ -27,7 +27,7 @@ func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
 			terminator.ExitWithPreLaunchServerError(err, "ERROR: The specified www-root-directory does not exist: "+cfg.RootDir)
 		}
 		// Hijack the static handler for customization later.
-		handler = VirtualHostStaticHandler(mStaticServer)
+		handler = VirtualHostStaticHandler(mStaticServer, cfg.App.IsInDevelopmentMode())
 
 		if cfg.App.IsInDevelopmentMode() {
 			handler = TrimSuffixDomainForDevelopment(handler, cfg.App.DevDomainSuffix)
