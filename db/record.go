@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/zhanbei/static-server/recorder"
+	"github.com/zhanbei/static-server/secoo"
 )
 
 var _ recorder.IRecord = (*Record)(nil)
@@ -13,6 +14,10 @@ var _ recorder.IRecord = (*Record)(nil)
 // Naming: Record, RequestRecord, ServiceRecords
 type Record struct {
 	Id ObjectId `json:"_id"`
+
+	SessionId ObjectId `json:"_sid,omitempty"`
+
+	Session *secoo.SessionCookieStore `json:"session,omitempty"`
 
 	Device *recorder.Device `json:"device"`
 

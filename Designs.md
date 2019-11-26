@@ -63,7 +63,7 @@
 - [ ] Tracking via Session Cookie
 	- [x] Generate Json-Web-Token as Cookie Value
 	- [x] Set Cookie to Track/Analyze Requests
-	- [ ] Record the request session ID for custom recorders/loggers.
+	- [x] Record the request session ID for custom recorders/loggers.
 	- [ ] Filter out the common crawlers by user-agent from request header.
 - [ ] Upgrading the Cli Package
 - [ ] Add a cmd/test(-t) to validate the specific configures and report.

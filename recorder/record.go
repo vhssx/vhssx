@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/zhanbei/static-server/secoo"
 )
 
 var _ IRecord = (*Record)(nil)
@@ -13,6 +15,8 @@ var _ IRecord = (*Record)(nil)
 // The record of a single request, with device and response.
 // Naming: Record, RequestRecord, ServiceRecords
 type Record struct {
+	Session *secoo.SessionCookieStore `json:"session"`
+
 	Device *Device `json:"device"`
 
 	Request *Request `json:"req"`

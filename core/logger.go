@@ -6,6 +6,7 @@ import (
 
 	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/recorder"
+	"github.com/zhanbei/static-server/secoo"
 )
 
 func getRemoteIp(header http.Header, original string) string {
@@ -48,6 +49,12 @@ func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure, recs recor
 		defer func(start time.Time) {
 			// Use a universal ending time for all recorders/loggers.
 			end := time.Now()
+
+			var store *secoo.SessionCookieStore
+			if cfg.SessionCookie != nil && cfg.SessionCookie.Enabled {
+				store = secoo.RestoreFromRequest(req)
+			}
+
 			// Wondering the differences between the deferred function and direct put below `next.ServeHTTP(w, req)`?
 			ip := req.RemoteAddr
 			if ops.TrustProxyIp {
@@ -55,7 +62,7 @@ func StructuredLoggingHandler(next http.Handler, cfg *conf.Configure, recs recor
 			}
 
 			for _, rec := range recs {
-				_ = rec.DoRecord(start, end, ip, req, lrw.StatusCode, w.Header())
+				_ = rec.DoRecord(start, end, ip, req, store, lrw.StatusCode, w.Header())
 			}
 		}(time.Now())
 		next.ServeHTTP(lrw, req)

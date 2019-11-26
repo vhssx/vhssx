@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/recorder"
+	"github.com/zhanbei/static-server/secoo"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -13,7 +14,11 @@ var (
 
 	mDbClient *mongo.Client
 
-	col *mongo.Collection
+	colGeneralRequests *mongo.Collection
+
+	colValidatingRequests *mongo.Collection
+
+	colValidatedRequests *mongo.Collection
 )
 
 // Initialize the mongodb connection, and store as global variables.
@@ -28,16 +33,33 @@ func ConnectToMongoDb(ops *conf.MongoDbOptions) error {
 	}
 	app = ops
 	mDbClient = client
-	col = GetColRequests()
+	colGeneralRequests = GetColRequests(conf.ColRequests)
+	colValidatingRequests = GetColRequests(conf.ColValidatingRequests)
+	colValidatedRequests = GetColRequests(conf.ColValidatedRequests)
 	return nil
 }
 
-func GetColRequests() *mongo.Collection {
-	return mDbClient.Database(app.DbName).Collection(app.GetColName(conf.ColRequests))
+func GetColRequests(colName string) *mongo.Collection {
+	return mDbClient.Database(app.DbName).Collection(app.GetColName(colName))
 }
 
-func InsertRecord(record *Record) error {
-	_, err := col.InsertOne(newCrudContext(), record)
+func InsertRecord(record *Record) (err error) {
+	if record.Session == nil {
+		_, err = colGeneralRequests.InsertOne(newCrudContext(), record)
+		return
+	}
+	switch record.Session.Level {
+	case secoo.LevelSecondTimeRequest:
+		record.Session = nil
+		_, err = colValidatingRequests.InsertOne(newCrudContext(), record)
+	case secoo.LevelFollowingTimeRequest:
+		record.Session = nil
+		_, err = colValidatedRequests.InsertOne(newCrudContext(), record)
+	case secoo.LevelFirstTimeRequest:
+		fallthrough
+	default:
+		_, err = colGeneralRequests.InsertOne(newCrudContext(), record)
+	}
 	return err
 }
 

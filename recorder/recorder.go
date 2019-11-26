@@ -10,6 +10,7 @@ import (
 
 	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/helpers/writersHelper"
+	"github.com/zhanbei/static-server/secoo"
 	"github.com/zhanbei/static-server/utils"
 )
 
@@ -67,8 +68,9 @@ func (m *Recorder) Record(target io.Writer, record *Record) (int, error) {
 }
 
 // FIX-ME The strategy of writing to stdout synchronously and writing to file asynchronously may be applied.
-func (m *Recorder) DoRecord(start, end time.Time, realIp string, req *http.Request, code int, header http.Header) error {
+func (m *Recorder) DoRecord(start, end time.Time, realIp string, req *http.Request, session *secoo.SessionCookieStore, code int, header http.Header) error {
 	record := &Record{
+		session,
 		NewDevice(realIp, req.UserAgent()),
 		NewRequest(req),
 		NewResponse(code, header, end.Sub(start)),

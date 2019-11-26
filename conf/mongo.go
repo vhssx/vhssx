@@ -1,7 +1,12 @@
 package conf
 
 const (
+	// Logger for first-level/unvalidated requests
 	ColRequests = "requests"
+	// Col for the second-level/validated requests.
+	ColValidatingRequests = "validating"
+	// Col for the third-level/post-validated requests.
+	ColValidatedRequests = "validated"
 )
 
 type MongoDbOptions struct {
