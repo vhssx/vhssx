@@ -6,6 +6,7 @@ import (
 
 	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/recorder"
+	"github.com/zhanbei/static-server/utils"
 )
 
 var _ recorder.IRecorder = (*Recorder)(nil)
@@ -24,7 +25,7 @@ func (m *Recorder) DoRecord(start, end time.Time, realIp string, req *http.Reque
 		recorder.NewDevice(realIp, req.UserAgent()),
 		recorder.NewRequest(req),
 		recorder.NewResponse(code, header, end.Sub(start)),
-		recorder.GetMilliseconds(start),
+		utils.GetMilliseconds(start),
 	}
 	// Asynchronously serialize the record to database( to save time).
 	go InsertRecordWithErrorProcessed(record)

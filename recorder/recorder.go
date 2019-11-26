@@ -10,6 +10,7 @@ import (
 
 	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/helpers/writersHelper"
+	"github.com/zhanbei/static-server/utils"
 )
 
 var _ IRecorder = (*Recorder)(nil)
@@ -71,7 +72,7 @@ func (m *Recorder) DoRecord(start, end time.Time, realIp string, req *http.Reque
 		NewDevice(realIp, req.UserAgent()),
 		NewRequest(req),
 		NewResponse(code, header, end.Sub(start)),
-		GetMilliseconds(start),
+		utils.GetMilliseconds(start),
 	}
 	target := writersHelper.StdoutVsFileWriter(m.Stdout, m.LogWriter)
 	_, err := m.Record(target, record)

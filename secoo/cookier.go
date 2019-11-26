@@ -18,9 +18,9 @@ func (m *SessionCookieHelper) ParseCookie4SessionStore(req *http.Request, key st
 	return m.ParseSessionStore(ck.Value)
 }
 
-func (m *SessionCookieHelper) NewSessionCookieTokenValue(extra string) (*SessionCookieStore, string) {
+func (m *SessionCookieHelper) NewSessionCookieTokenValue(level RequestLevel, extra string) (*SessionCookieStore, string) {
 	// FIX-ME A step further, validate with the bare session cookie as chained cookies.
-	store := NewSessionCookieStore(NewSessionId(), extra)
+	store := NewSessionCookieStore(NewSessionId(), level, extra)
 	token, err := m.EncodeSessionStore(store)
 	if err != nil {
 		fmt.Println("[JWT] Token Encoding Failed:", err, store)

@@ -8,8 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-const KeySessionId = "_SESSION_ID"
-
 const (
 	KeyBareSessionCookieId = "_bs0d"
 
@@ -31,7 +29,7 @@ func HandlerSetSessionCookie(next http.Handler, ops *conf.OptionsSessionCookie) 
 		if store != nil {
 			// Basically the store is never nil.
 			// Set for recorders/loggers.
-			req.Header.Set(KeySessionId, store.SessionId)
+			store.SerializeToRequest(req)
 		}
 		next.ServeHTTP(w, req)
 	}
@@ -49,9 +47,10 @@ func (m *SessionCookieHelper) HandleSessionCookie(req *http.Request) (*http.Cook
 	// Check and set cookies.
 	//cks := req.Cookies()
 	store, err := m.ParseCookie4SessionStore(req, KeyValidatedSessionCookieId)
-	if err == nil && store != nil {
+	if err == nil && store != nil && store.Level == 2 {
 		// C. The following requests with a validated cookie.
 		// Found validated session store.
+		store.Level = LevelFollowingTimeRequest
 		return nil, store
 	}
 	store, err = m.ParseCookie4SessionStore(req, KeyBareSessionCookieId)
@@ -59,10 +58,10 @@ func (m *SessionCookieHelper) HandleSessionCookie(req *http.Request) (*http.Cook
 		// B. The second request with a bare cookie.
 		// The remote device is validated as a real browser instead of a crawler.
 		// Hence generate a validated cookie based on the bare cookie.
-		nextStore, nextToken := m.NewSessionCookieTokenValue(store.SessionId)
+		nextStore, nextToken := m.NewSessionCookieTokenValue(LevelSecondTimeRequest, store.SessionId)
 		return m.NewHttpCookie(KeyValidatedSessionCookieId, req.Host, nextToken), nextStore
 	}
 	// A. The first request without a single cookie.
-	store, token := m.NewSessionCookieTokenValue("")
+	store, token := m.NewSessionCookieTokenValue(LevelFirstTimeRequest, "")
 	return m.NewHttpCookie(KeyBareSessionCookieId, req.Host, token), store
 }

@@ -10,7 +10,7 @@ import (
 func TestGenerateSessionCookieValue(t *testing.T) {
 	gene := secoo.SessionCookieHelper{[]byte("Hola World"), true}
 
-	store := secoo.NewSessionCookieStore("Hello", "World")
+	store := secoo.NewSessionCookieStore("Hello", secoo.LevelFirstTimeRequest, "World")
 	token, err := gene.EncodeSessionStore(store)
 	fmt.Println(token, err)
 

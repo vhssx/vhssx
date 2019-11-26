@@ -33,6 +33,5 @@ func (m *SessionCookieHelper) ParseSessionStore(token string) (*SessionCookieSto
 		fmt.Println("[JWT] Token Validating Failed:", result)
 		return nil, errors.New("validating jwt failed")
 	}
-	fmt.Printf("store.SessionId, store.StandardClaims.ExpiresAt: %v %v", store.SessionId, store.StandardClaims.ExpiresAt)
 	return store, nil
 }
