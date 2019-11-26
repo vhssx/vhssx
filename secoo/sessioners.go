@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/zhanbei/static-server/utils"
@@ -37,7 +38,7 @@ func NewSessionCookieStore(sessionId string, level RequestLevel, extra string) *
 	return &SessionCookieStore{sessionId, level, extra, jwt.StandardClaims{
 		Id: sessionId,
 
-		IssuedAt: utils.GetCurrentMilliseconds(),
+		IssuedAt: time.Now().Unix(),
 	}}
 }
 

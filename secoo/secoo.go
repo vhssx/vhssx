@@ -29,7 +29,7 @@ func HandlerSetSessionCookie(next http.Handler, ops *conf.OptionsSessionCookie) 
 		ck, store := helper.HandleSessionCookie(req)
 		if ck != nil {
 			http.SetCookie(w, ck)
-			fmt.Println("Setting cookie:", ck.String(), ck)
+			fmt.Println("Setting cookie:", ck.String())
 		}
 		if store != nil {
 			// Basically the store is never nil.

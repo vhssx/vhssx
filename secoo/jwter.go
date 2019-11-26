@@ -25,7 +25,7 @@ func (m *SessionCookieHelper) ParseSessionStore(token string) (*SessionCookieSto
 		return m.Secret, nil
 	})
 	if err != nil {
-		fmt.Println("[JWT] Token Parsing Failed:", err)
+		fmt.Println("[JWT] Token Parsing Failed:[", err, "][", token, "]")
 		return nil, err
 	}
 
