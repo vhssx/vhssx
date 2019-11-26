@@ -8,8 +8,10 @@ const DefaultCrawlerFilter = "(?i)google|baidu|bot|crawler|spider|crawling"
 
 type OptionsSessionCookie struct {
 	Enabled bool `json:"enabled"`
-
-	Secret string `json:"secret"`
+	// The field to receive configuration values.
+	Secret string `json:"secret,omitempty"`
+	// The real secret that is hidden for serialization.
+	RealSecret string `json:"-" bson:"-"`
 	// Whether to share cookies across all sub domains.
 	AllSubDomains bool `json:"withSubDomains"`
 	// Filter off the common crawlers with regexp by user-agent.
@@ -35,5 +37,8 @@ func (m *OptionsSessionCookie) IsValid() bool {
 		}
 		m.RegexpFilter = ex
 	}
-	return exist(m.Secret)
+	m.RealSecret = m.Secret
+	// Keep the real secret same and sound.
+	m.Secret = ""
+	return exist(m.RealSecret)
 }

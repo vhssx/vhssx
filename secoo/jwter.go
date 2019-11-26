@@ -9,7 +9,7 @@ import (
 )
 
 func NewSessionCookieHelper(ops *conf.OptionsSessionCookie) *SessionCookieHelper {
-	return &SessionCookieHelper{[]byte(ops.Secret), ops.AllSubDomains}
+	return &SessionCookieHelper{[]byte(ops.RealSecret), ops.AllSubDomains}
 }
 
 func (m *SessionCookieHelper) EncodeSessionStore(claims *SessionCookieStore) (string, error) {
