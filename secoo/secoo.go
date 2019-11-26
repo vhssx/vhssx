@@ -21,6 +21,11 @@ func NewSessionId() string {
 func HandlerSetSessionCookie(next http.Handler, ops *conf.OptionsSessionCookie) http.HandlerFunc {
 	helper := NewSessionCookieHelper(ops)
 	return func(w http.ResponseWriter, req *http.Request) {
+		if ops.RegexpFilter.MatchString(req.UserAgent()) {
+			// Skipping the request because of user agent filter.
+			next.ServeHTTP(w, req)
+			return
+		}
 		ck, store := helper.HandleSessionCookie(req)
 		if ck != nil {
 			http.SetCookie(w, ck)

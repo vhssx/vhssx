@@ -12,25 +12,29 @@ func TestConfigure_IsValid(t *testing.T) {
 	validateConfigures(t, "Validating the false values.", &Configure{
 		".",
 		"8080",
+		nil,
 		&ServerOptions{true, false, true, true},
 		[]*OptionLogger{
 			NewLogger("json", false, ""),
 			&OptionLogger{false, "bson", false, false, "", nil},
 		},
 		&MongoDbOptions{true, "mongodb://127.0.0.1:27017", "", ""},
-		&OptionLoggerGorilla{false, "text", false, "", nil},
+		&OptionLoggerGorilla{true, "combined", false, "", nil},
+		nil,
 	}, false)
 
 	// Valid configures example.
 	validateConfigures(t, "Validating the true values.", &Configure{
 		".",
 		"8080",
+		nil,
 		NewDefaultServerOptions(),
 		[]*OptionLogger{
 			NewLogger("json", false, "logs/whatever.log"),
 		},
 		&MongoDbOptions{true, "mongodb://127.0.0.1:27017", "vhss", "logging.vhss"},
-		&OptionLoggerGorilla{true, "combined", false, "", nil},
+		&OptionLoggerGorilla{true, "combined", true, "", nil},
+		nil,
 	}, true)
 }
 
