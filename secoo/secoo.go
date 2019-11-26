@@ -23,6 +23,8 @@ func HandlerSetSessionCookie(next http.Handler, ops *conf.OptionsSessionCookie) 
 	return func(w http.ResponseWriter, req *http.Request) {
 		if ops.RegexpFilter.MatchString(req.UserAgent()) {
 			// Skipping the request because of user agent filter.
+			store := NewSessionCookieStore(NewSessionId(), LevelCrawlerRequest, "")
+			store.SerializeToRequest(req)
 			next.ServeHTTP(w, req)
 			return
 		}

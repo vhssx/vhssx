@@ -14,6 +14,8 @@ type RequestLevel int
 
 const (
 	LevelFirstTimeRequest RequestLevel = 1
+	// The requests from crawlers will carry no cookies, hence the level is always 1.
+	LevelCrawlerRequest RequestLevel = 11
 
 	LevelSecondTimeRequest RequestLevel = 2
 
@@ -31,7 +33,7 @@ type SessionCookieStore struct {
 
 	Extra string `json:"extra"`
 
-	jwt.StandardClaims
+	jwt.StandardClaims `json:"meta,omitempty"`
 }
 
 func NewSessionCookieStore(sessionId string, level RequestLevel, extra string) *SessionCookieStore {

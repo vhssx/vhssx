@@ -14,11 +14,15 @@ var (
 
 	mDbClient *mongo.Client
 
+	colCrawlerRequests *mongo.Collection
+
 	colGeneralRequests *mongo.Collection
 
 	colValidatingRequests *mongo.Collection
 
 	colValidatedRequests *mongo.Collection
+
+	colUnknownRequests *mongo.Collection
 )
 
 // Initialize the mongodb connection, and store as global variables.
@@ -33,9 +37,11 @@ func ConnectToMongoDb(ops *conf.MongoDbOptions) error {
 	}
 	app = ops
 	mDbClient = client
-	colGeneralRequests = GetColRequests(conf.ColRequests)
+	colCrawlerRequests = GetColRequests(conf.ColCrawlerRequests)
+	colGeneralRequests = GetColRequests(conf.ColGeneralRequests)
 	colValidatingRequests = GetColRequests(conf.ColValidatingRequests)
 	colValidatedRequests = GetColRequests(conf.ColValidatedRequests)
+	colUnknownRequests = GetColRequests(conf.ColUnknownRequests)
 	return nil
 }
 
@@ -49,6 +55,9 @@ func InsertRecord(record *Record) (err error) {
 		return
 	}
 	switch record.Session.Level {
+	case secoo.LevelCrawlerRequest:
+		record.Session = nil
+		_, err = colCrawlerRequests.InsertOne(newCrudContext(), record)
 	case secoo.LevelSecondTimeRequest:
 		record.Session = nil
 		_, err = colValidatingRequests.InsertOne(newCrudContext(), record)
@@ -56,9 +65,9 @@ func InsertRecord(record *Record) (err error) {
 		record.Session = nil
 		_, err = colValidatedRequests.InsertOne(newCrudContext(), record)
 	case secoo.LevelFirstTimeRequest:
-		fallthrough
-	default:
 		_, err = colGeneralRequests.InsertOne(newCrudContext(), record)
+	default:
+		_, err = colUnknownRequests.InsertOne(newCrudContext(), record)
 	}
 	return err
 }

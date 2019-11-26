@@ -2,11 +2,19 @@ package conf
 
 const (
 	// Logger for first-level/unvalidated requests
-	ColRequests = "requests"
+	PrefixColRequests = "requests"
+	// Logger for first-level/general requests
+	ColCrawlerRequests = PrefixColRequests + ".crawlers"
+	// Logger for first-level/general requests
+	ColGeneralRequests = PrefixColRequests + ".general"
 	// Col for the second-level/validated requests.
-	ColValidatingRequests = "validating"
+	ColValidatingRequests = PrefixColRequests + ".validating"
 	// Col for the third-level/post-validated requests.
-	ColValidatedRequests = "validated"
+	ColValidatedRequests = PrefixColRequests + ".validated"
+	// Unknown requests.
+	ColUnknownRequests = PrefixColRequests + ".unknown"
+	// Store the configures later.
+	PrefixColConfigures = "configures"
 )
 
 type MongoDbOptions struct {
