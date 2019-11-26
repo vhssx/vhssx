@@ -24,7 +24,7 @@
 - Log Format
 	- How to note down the request performance.
 - Symbolic-linked Sites
-    - Treat as normal directory?
+	- Treat as normal directory?
 
 ## Packages and Modules
 
@@ -57,9 +57,14 @@
 - [x] Upgrade recorder times.
 - [x] Integrating MongoDB
 - [x] Upgrade the logger formats(combined/extended).
-- [x] Support _.other.sites
+- [x] Support \_.other.sites
 - [x] 404 Status Code
 - [x] Support symbolic-linked sites.
+- [ ] Tracking via Session Cookie
+	- [x] Generate Json-Web-Token as Cookie Value
+	- [x] Set Cookie to Track/Analyze Requests
+	- [ ] Record the request session ID for custom recorders/loggers.
+	- [ ] Filter out the common crawlers by user-agent from request header.
 - [ ] Upgrading the Cli Package
 - [ ] Add a cmd/test(-t) to validate the specific configures and report.
 - [x] Development in the virtual hosts mode.
@@ -96,7 +101,7 @@ Powerful vs Performance?
 		- May not be copied nor fallthrough, but better be referred cross site.
 		- May be used to as the custom *404* pages, corresponding with the route mapping.
 - [x] Fallthrough by domains `+++`
-	- (*.)domain.com --> _.domain.com --> _.default.com
+	- (\*.)domain.com --> \_.domain.com --> \_.default.com
 	- Scan the folders for site configures.
 	- Site/404.html --> Scope/404 --> Global/404
 - [ ] Custom Pages(404/50x) for different hosts. `+++`

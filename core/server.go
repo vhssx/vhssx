@@ -10,6 +10,7 @@ import (
 	"github.com/zhanbei/static-server/helpers/terminator"
 	"github.com/zhanbei/static-server/helpers/writersHelper"
 	"github.com/zhanbei/static-server/recorder"
+	"github.com/zhanbei/static-server/secoo"
 )
 
 func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
@@ -43,6 +44,10 @@ func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
 			terminator.ExitWithPreLaunchServerError(err, "ERROR: The specified www-root-directory does not exist: "+cfg.RootDir)
 		}
 		handler = mStaticServer
+	}
+
+	if cfg.SessionCookie != nil && cfg.SessionCookie.Enabled {
+		handler = secoo.HandlerSetSessionCookie(handler, cfg.SessionCookie)
 	}
 
 	fmt.Println("Looking after directory:", cfg.RootDir)

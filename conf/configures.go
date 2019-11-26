@@ -32,6 +32,8 @@ type Configure struct {
 	MongoDbOptions *MongoDbOptions `json:"mongo"`
 
 	GorillaOptions *OptionLoggerGorilla `json:"gorilla"`
+
+	SessionCookie *OptionsSessionCookie `json:"secoo"`
 }
 
 var has = utils.NotEmpty
@@ -67,6 +69,10 @@ func (m *Configure) IsValid() bool {
 	}
 
 	if m.GorillaOptions != nil && !m.GorillaOptions.IsValid() {
+		return false
+	}
+
+	if m.SessionCookie != nil && !m.SessionCookie.IsValid() {
 		return false
 	}
 
