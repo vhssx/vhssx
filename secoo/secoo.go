@@ -65,7 +65,7 @@ func (m *SessionCookieHelper) HandleSessionCookie(req *http.Request) (*http.Cook
 		// B. The second request with a bare cookie.
 		// The remote device is validated as a real browser instead of a crawler.
 		// Hence generate a validated cookie based on the bare cookie.
-		nextStore, nextToken := m.NewSessionCookieTokenValue(LevelSecondTimeRequest, store.SessionId)
+		nextStore, nextToken := m.NewSessionCookieTokenValue(LevelSecondTimeRequest, store.SessionIdHex)
 		return m.NewHttpCookie(KeyValidatedSessionCookieId, req.Host, nextToken), nextStore
 	}
 	// A. The first request without a single cookie.

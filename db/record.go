@@ -15,7 +15,7 @@ var _ recorder.IRecord = (*Record)(nil)
 type Record struct {
 	Id ObjectId `json:"_id"`
 
-	SessionId ObjectId `json:"_sid,omitempty"`
+	SessionId *ObjectId `json:"_sid,omitempty"`
 
 	Session *secoo.SessionCookieStore `json:"session,omitempty"`
 

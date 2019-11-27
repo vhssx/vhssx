@@ -54,19 +54,30 @@ func InsertRecord(record *Record) (err error) {
 		_, err = colGeneralRequests.InsertOne(newCrudContext(), record)
 		return
 	}
+	// Current the #Id is the #SessionId while the #SessionId is the potential #PreviousSessionId.
 	switch record.Session.Level {
 	case secoo.LevelCrawlerRequest:
+		// ID = NewID(); SID = nil;
 		record.Session = nil
 		_, err = colCrawlerRequests.InsertOne(newCrudContext(), record)
+	case secoo.LevelFirstTimeRequest:
+		// ID = PreviousSessionID; SID = nil;
+		_, err = colGeneralRequests.InsertOne(newCrudContext(), record)
 	case secoo.LevelSecondTimeRequest:
+		// ID = NextSessionID; SID = PreviousSessionID;
 		record.Session = nil
 		_, err = colValidatingRequests.InsertOne(newCrudContext(), record)
 	case secoo.LevelFollowingTimeRequest:
+		// ID = NewID(); SID = NextSessionID;
+		record.SessionId = &record.Id
+		record.Id = NewObjectId()
 		record.Session = nil
 		_, err = colValidatedRequests.InsertOne(newCrudContext(), record)
-	case secoo.LevelFirstTimeRequest:
-		_, err = colGeneralRequests.InsertOne(newCrudContext(), record)
 	default:
+		// ID = NewID(); SID = nil;
+		record.SessionId = &record.Id
+		// Create a new ID for whatever safety reason.
+		record.Id = NewObjectId()
 		_, err = colUnknownRequests.InsertOne(newCrudContext(), record)
 	}
 	return err

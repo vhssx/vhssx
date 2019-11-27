@@ -84,7 +84,7 @@
 - [ ] Duplicated logical codes for regular and modular sites.
 - [ ] Upgrade Usages of Collections
 	- [ ] Move trusted requests out from general requests elegantly.
-	- [ ] Use the session ID as the primary Object ID.
+	- [x] Use the session ID as the primary Object ID.
 - [ ] Renaming the Project to `vhssx`
 	- [ ] Update documents and instructions.
 

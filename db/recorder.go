@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -22,19 +21,19 @@ func NewRecorder(ops *conf.MongoDbOptions) *Recorder {
 }
 
 func (m *Recorder) DoRecord(start, end time.Time, realIp string, req *http.Request, session *secoo.SessionCookieStore, code int, header http.Header) error {
+	// Session is nil, when the secoo module is disabled.
 	var sid ObjectId
-	if session != nil {
-		_sid, err := NewObjectIdFromHex(session.Id)
-		if err != nil {
-			fmt.Println("failed to parse the session ID from hex:[", session.Id, "].")
-		} else {
-			sid = _sid
-		}
+	var xid *ObjectId
+	if session == nil {
+		sid = NewObjectId() // Only generate new Object IDs for the no secoo mode.
+	} else {
+		sid, xid = session.GetSessionIds()
 	}
+	// Current the #Id is the #SessionId while the #SessionId is the potential #PreviousSessionId.
 	record := &Record{
-		NewObjectId(),
+		sid, // NewObjectId(), There are (crawlers/1st/2nd)times when the ID need no generated again.
 		// Leave a session ID here, is sufficiently fine.
-		sid,
+		xid, // Keep the session ID and extra ID stored here temporarily.
 		// Record the session store in the collection of first-time requests.
 		session,
 		recorder.NewDevice(realIp, req.UserAgent()),
