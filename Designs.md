@@ -60,11 +60,11 @@
 - [x] Support \_.other.sites
 - [x] 404 Status Code
 - [x] Support symbolic-linked sites.
-- [ ] Tracking via Session Cookie
+- [x] Tracking via Session Cookie
 	- [x] Generate Json-Web-Token as Cookie Value
 	- [x] Set Cookie to Track/Analyze Requests
 	- [x] Record the request session ID for custom recorders/loggers.
-	- [ ] Filter out the common crawlers by user-agent from request header.
+	- [x] Filter out the common crawlers by user-agent from request header.
 - [ ] Upgrading the Cli Package
 - [ ] Add a cmd/test(-t) to validate the specific configures and report.
 - [x] Development in the virtual hosts mode.
@@ -82,6 +82,11 @@
 	- [ ] Robots: support allowed rules and disallowed rules. `---`
 - [ ] Investigate the static caching problem.
 - [ ] Duplicated logical codes for regular and modular sites.
+- [ ] Upgrade Usages of Collections
+	- [ ] Move trusted requests out from general requests elegantly.
+	- [ ] Use the session ID as the primary Object ID.
+- [ ] Renaming the Project to `vhssx`
+	- [ ] Update documents and instructions.
 
 ## Fallthrough and Custom 404 Page
 
