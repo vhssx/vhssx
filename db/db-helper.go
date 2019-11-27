@@ -1,9 +1,12 @@
 package db
 
 import (
+	"fmt"
+
 	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/recorder"
 	"github.com/zhanbei/static-server/secoo"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -17,6 +20,8 @@ var (
 	colCrawlerRequests *mongo.Collection
 
 	colGeneralRequests *mongo.Collection
+
+	colLandingRequests *mongo.Collection
 
 	colValidatingRequests *mongo.Collection
 
@@ -39,6 +44,7 @@ func ConnectToMongoDb(ops *conf.MongoDbOptions) error {
 	mDbClient = client
 	colCrawlerRequests = GetColRequests(conf.ColCrawlerRequests)
 	colGeneralRequests = GetColRequests(conf.ColGeneralRequests)
+	colLandingRequests = GetColRequests(conf.ColLandingRequests)
 	colValidatingRequests = GetColRequests(conf.ColValidatingRequests)
 	colValidatedRequests = GetColRequests(conf.ColValidatedRequests)
 	colUnknownRequests = GetColRequests(conf.ColUnknownRequests)
@@ -67,6 +73,21 @@ func InsertRecord(record *Record) (err error) {
 		// ID = NextSessionID; SID = PreviousSessionID;
 		record.Session = nil
 		_, err = colValidatingRequests.InsertOne(newCrudContext(), record)
+		// Pull the corresponding requests from first level requests out.
+		oid := record.SessionId
+		if oid == nil {
+			fmt.Println("the expected Session ID is nil:[", record.ToCombinedLog(), "].")
+			break
+		}
+		raw, _err := colGeneralRequests.FindOne(newCrudContext(), bson.M{}).DecodeBytes()
+		if _err != nil {
+			fmt.Println("failed to find the target general request by the previous session ID:", err)
+			break
+		}
+		res, _err := colLandingRequests.InsertOne(newCrudContext(), raw)
+		if _err != nil {
+			fmt.Println("failed to insert the general request found by the previous session ID:", err, res)
+		}
 	case secoo.LevelFollowingTimeRequest:
 		// ID = NewID(); SID = NextSessionID;
 		record.SessionId = &record.Id

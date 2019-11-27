@@ -82,8 +82,8 @@
 	- [ ] Robots: support allowed rules and disallowed rules. `---`
 - [ ] Investigate the static caching problem.
 - [ ] Duplicated logical codes for regular and modular sites.
-- [ ] Upgrade Usages of Collections
-	- [ ] Move trusted requests out from general requests elegantly.
+- [x] Upgrade Usages of Collections
+	- [x] Move/Copy trusted requests out from general requests elegantly.
 	- [x] Use the session ID as the primary Object ID.
 - [ ] Renaming the Project to `vhssx`
 	- [ ] Update documents and instructions.

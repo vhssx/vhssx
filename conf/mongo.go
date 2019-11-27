@@ -5,8 +5,10 @@ const (
 	PrefixColRequests = "requests"
 	// Logger for first-level/general requests
 	ColCrawlerRequests = PrefixColRequests + ".crawlers"
-	// Logger for first-level/general requests
+	// Col for the general(first-level) requests
 	ColGeneralRequests = PrefixColRequests + ".general"
+	// Col for the first-level requests.
+	ColLandingRequests = PrefixColRequests + ".landing"
 	// Col for the second-level/validated requests.
 	ColValidatingRequests = PrefixColRequests + ".validating"
 	// Col for the third-level/post-validated requests.
