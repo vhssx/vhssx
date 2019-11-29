@@ -37,15 +37,19 @@ func ConnectToMongoDb(ops *conf.MongoDbOptions) error {
 	}
 	app = ops
 	mDbClient = client
-	colCrawlerRequests = GetColRequests(conf.ColCrawlerRequests)
-	colGeneralRequests = GetColRequests(conf.ColGeneralRequests)
-	colLandingRequests = GetColRequests(conf.ColLandingRequests)
-	colValidatingRequests = GetColRequests(conf.ColValidatingRequests)
-	colValidatedRequests = GetColRequests(conf.ColValidatedRequests)
-	colUnknownRequests = GetColRequests(conf.ColUnknownRequests)
+	colCrawlerRequests = getCol(conf.ColCrawlerRequests)
+	colGeneralRequests = getCol(conf.ColGeneralRequests)
+	colLandingRequests = getCol(conf.ColLandingRequests)
+	colValidatingRequests = getCol(conf.ColValidatingRequests)
+	colValidatedRequests = getCol(conf.ColValidatedRequests)
+	colUnknownRequests = getCol(conf.ColUnknownRequests)
 	return nil
 }
 
-func GetColRequests(colName string) *mongo.Collection {
-	return mDbClient.Database(app.DbName).Collection(app.GetColName(colName))
+func GetCol(colName string) *mongo.Collection {
+	return mDbClient.Database(app.DbName).Collection(colName)
+}
+
+func getCol(colName string) *mongo.Collection {
+	return GetCol(app.GetColName(colName))
 }
