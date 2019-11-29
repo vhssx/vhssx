@@ -41,10 +41,9 @@ func InsertRecord(record *Record) (err error) {
 		PullOverLandingRequests(record, record.SessionId)
 	case secoo.LevelFollowingTimeRequest:
 		// ID = NewID(); SID = NextSessionID;
-		fmt.Println("record.Id, record.SessionId:", record.Id, record.SessionId)
-		record.SessionId = &record.Id
+		tId := record.Id
+		record.SessionId = &tId
 		record.Id = dxb.NewObjectId()
-		fmt.Println("record.Id, record.SessionId:", record.Id, record.SessionId)
 		record.Session = nil
 		_, err = colValidatedRequests.InsertOne(newCrudContext(), record)
 	default:
