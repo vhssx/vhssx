@@ -28,15 +28,15 @@ const (
 // Store values if the related meta data is lost?
 // Like: SessionID, Version, Landing URI, CreatedTime
 type SessionCookieStore struct {
-	SessionIdHex string `json:"sid"`
+	SessionIdHex string `json:"sid" bson:"sid"`
 	// The time requested.
 	// It could the first time, the second time, or the following time.
 	// [ 1 | 2 | 12 ]
-	Level RequestLevel `json:"level"`
+	Level RequestLevel `json:"level" bson:"level"`
 
-	PreviousSessionIdHex string `json:"extra"`
+	PreviousSessionIdHex string `json:"extra" bson:"extra"`
 
-	jwt.StandardClaims `json:"meta,omitempty"`
+	jwt.StandardClaims `json:"meta,omitempty" bson:"meta,omitempty"`
 }
 
 func NewSessionCookieStore(sessionId string, level RequestLevel, extra string) *SessionCookieStore {

@@ -75,9 +75,9 @@ func (m *Record) Save() error {
 
 type Device struct {
 	// Trust proxy by default.
-	Ip string `json:"ip"`
+	Ip string `json:"ip" bson:"ip"`
 
-	UserAgent string `json:"info"`
+	UserAgent string `json:"info" bson:"info"`
 }
 
 func NewDevice(ip, userAgent string) *Device {
