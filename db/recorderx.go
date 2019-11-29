@@ -19,9 +19,11 @@ func InsertRecordWithErrorProcessed(record *Record) {
 
 func InsertRecord(record *Record) (err error) {
 	if record.Session == nil {
+		// Insert record in the no-session-cookie mode.
 		_, err = colGeneralRequests.InsertOne(newCrudContext(), record)
 		return
 	}
+
 	// Current the #Id is the #SessionId while the #SessionId is the potential #PreviousSessionId.
 	switch record.Session.Level {
 	case secoo.LevelCrawlerRequest:
@@ -36,24 +38,13 @@ func InsertRecord(record *Record) (err error) {
 		record.Session = nil
 		_, err = colValidatingRequests.InsertOne(newCrudContext(), record)
 		// Pull the corresponding requests from first level requests out.
-		oid := record.SessionId
-		if oid == nil {
-			fmt.Println("the expected Session ID is nil:[", record.ToCombinedLog(), "].")
-			break
-		}
-		raw, _err := colGeneralRequests.FindOne(newCrudContext(), bson.M{"_id": oid}).DecodeBytes()
-		if _err != nil {
-			fmt.Println("failed to find the target general request by the previous session ID:", err)
-			break
-		}
-		res, _err := colLandingRequests.InsertOne(newCrudContext(), raw)
-		if _err != nil {
-			fmt.Println("failed to insert the general request found by the previous session ID:", err, res)
-		}
+		PullOverLandingRequests(record, record.SessionId)
 	case secoo.LevelFollowingTimeRequest:
 		// ID = NewID(); SID = NextSessionID;
+		fmt.Println("record.Id, record.SessionId:", record.Id, record.SessionId)
 		record.SessionId = &record.Id
 		record.Id = dxb.NewObjectId()
+		fmt.Println("record.Id, record.SessionId:", record.Id, record.SessionId)
 		record.Session = nil
 		_, err = colValidatedRequests.InsertOne(newCrudContext(), record)
 	default:
@@ -64,4 +55,20 @@ func InsertRecord(record *Record) (err error) {
 		_, err = colUnknownRequests.InsertOne(newCrudContext(), record)
 	}
 	return err
+}
+
+func PullOverLandingRequests(record *Record, initialSessionId *dxb.ObjectId) {
+	if initialSessionId == nil {
+		fmt.Println("the expected Session ID is nil:[", record.ToCombinedLog(), "].")
+		return
+	}
+	raw, err := colGeneralRequests.FindOne(newCrudContext(), bson.M{"_id": initialSessionId}).DecodeBytes()
+	if err != nil {
+		fmt.Println("failed to find the target general request by the previous session ID:", err)
+		return
+	}
+	res, err := colLandingRequests.InsertOne(newCrudContext(), raw)
+	if err != nil {
+		fmt.Println("failed to insert the general request found by the previous session ID:", err, res)
+	}
 }
