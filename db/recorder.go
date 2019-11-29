@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/zhanbei/dxb"
 	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/recorder"
 	"github.com/zhanbei/static-server/secoo"
@@ -22,10 +23,10 @@ func NewRecorder(ops *conf.MongoDbOptions) *Recorder {
 
 func (m *Recorder) DoRecord(start, end time.Time, realIp string, req *http.Request, session *secoo.SessionCookieStore, code int, header http.Header) error {
 	// Session is nil, when the secoo module is disabled.
-	var sid ObjectId
-	var xid *ObjectId
+	var sid dxb.ObjectId
+	var xid *dxb.ObjectId
 	if session == nil {
-		sid = NewObjectId() // Only generate new Object IDs for the no secoo mode.
+		sid = dxb.NewObjectId() // Only generate new Object IDs for the no secoo mode.
 	} else {
 		sid, xid = session.GetSessionIds()
 	}

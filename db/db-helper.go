@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 
+	"github.com/zhanbei/dxb"
 	"github.com/zhanbei/static-server/conf"
 	"github.com/zhanbei/static-server/recorder"
 	"github.com/zhanbei/static-server/secoo"
@@ -91,14 +92,14 @@ func InsertRecord(record *Record) (err error) {
 	case secoo.LevelFollowingTimeRequest:
 		// ID = NewID(); SID = NextSessionID;
 		record.SessionId = &record.Id
-		record.Id = NewObjectId()
+		record.Id = dxb.NewObjectId()
 		record.Session = nil
 		_, err = colValidatedRequests.InsertOne(newCrudContext(), record)
 	default:
 		// ID = NewID(); SID = nil;
 		record.SessionId = &record.Id
 		// Create a new ID for whatever safety reason.
-		record.Id = NewObjectId()
+		record.Id = dxb.NewObjectId()
 		_, err = colUnknownRequests.InsertOne(newCrudContext(), record)
 	}
 	return err

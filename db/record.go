@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/zhanbei/dxb"
 	"github.com/zhanbei/static-server/recorder"
 	"github.com/zhanbei/static-server/secoo"
 )
@@ -13,9 +14,9 @@ var _ recorder.IRecord = (*Record)(nil)
 // The record of a single request, with device and response.
 // Naming: Record, RequestRecord, ServiceRecords
 type Record struct {
-	Id ObjectId `json:"_id"`
+	Id dxb.ObjectId `json:"_id"`
 
-	SessionId *ObjectId `json:"_sid,omitempty"`
+	SessionId *dxb.ObjectId `json:"_sid,omitempty"`
 
 	Session *secoo.SessionCookieStore `json:"session,omitempty"`
 
