@@ -23,6 +23,8 @@ var (
 	colValidatedRequests *mongo.Collection
 
 	colUnknownRequests *mongo.Collection
+
+	colShortenerRedirections *mongo.Collection
 )
 
 // Initialize the mongodb connection, and store as global variables.
@@ -43,6 +45,7 @@ func ConnectToMongoDb(ops *conf.MongoDbOptions) error {
 	colValidatingRequests = getCol(conf.ColValidatingRequests)
 	colValidatedRequests = getCol(conf.ColValidatedRequests)
 	colUnknownRequests = getCol(conf.ColUnknownRequests)
+	colShortenerRedirections = getCol(conf.ColShortenerRedirections)
 	return nil
 }
 

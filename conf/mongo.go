@@ -15,8 +15,17 @@ const (
 	ColValidatedRequests = PrefixColRequests + ".validated"
 	// Unknown requests.
 	ColUnknownRequests = PrefixColRequests + ".unknown"
+
+	// URL Shortener / Redirection Management
+	PrefixColShortener = "shortener"
+	// The records of all redirections.
+	ColShortenerRedirections = PrefixColShortener + ".redirections"
+
 	// Store the configures later.
 	PrefixColConfigures = "configures"
+	// The configures of domains.
+	// FIX-ME Support configures for domains from database( vs configuration file).
+	ColConfigureDomains = PrefixColConfigures + ".domains"
 )
 
 type MongoDbOptions struct {

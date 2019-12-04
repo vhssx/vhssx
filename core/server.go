@@ -11,6 +11,7 @@ import (
 	"github.com/zhanbei/static-server/helpers/writersHelper"
 	"github.com/zhanbei/static-server/recorder"
 	"github.com/zhanbei/static-server/secoo"
+	"github.com/zhanbei/static-server/shortener"
 )
 
 func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
@@ -29,14 +30,6 @@ func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
 		}
 		// Hijack the static handler for customization later.
 		handler = VirtualHostStaticHandler(mStaticServer, cfg.App.IsInDevelopmentMode())
-
-		if cfg.App.IsInDevelopmentMode() {
-			handler = TrimSuffixDomainForDevelopment(handler, cfg.App.DevDomainSuffix)
-			fmt.Println("Server is running in the DEVELOPMENT mode, with a domain(" + cfg.App.DevDomainSuffix + ") for development.")
-		} else {
-			fmt.Println("Server is running in the PRODUCTION mode.")
-		}
-
 	} else {
 		fmt.Println("Hosting static files in the " + conf.OptionNameNoTrailingSlash + " mode.")
 		mStaticServer, err := servestatic.NewFileServer(cfg.RootDir, false)
@@ -46,8 +39,20 @@ func RealServer(cfg *conf.Configure, loggers recorder.IRecorders) error {
 		handler = mStaticServer
 	}
 
+	if true {
+		// Following configurations.
+		handler = shortener.HandlerUrlDirections(handler)
+	}
+
 	if cfg.SessionCookie != nil && cfg.SessionCookie.Enabled {
 		handler = secoo.HandlerSetSessionCookie(handler, cfg.SessionCookie)
+	}
+
+	if cfg.App.IsInDevelopmentMode() {
+		handler = TrimSuffixDomainForDevelopment(handler, cfg.App.DevDomainSuffix)
+		fmt.Println("Server is running in the DEVELOPMENT mode, with a domain(" + cfg.App.DevDomainSuffix + ") for development.")
+	} else {
+		fmt.Println("Server is running in the PRODUCTION mode.")
 	}
 
 	fmt.Println("Looking after directory:", cfg.RootDir)
